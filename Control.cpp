@@ -3,10 +3,12 @@
 #include <fstream>
 #include<string>
 #include <sstream>
-//#include "pch.h"
 using namespace std;
 
+
+
 Control::Control() {
+
 	//各クラスのインスタンス
 	player = new Player;
 	back = new Back;
@@ -19,6 +21,11 @@ Control::Control() {
 	for (int i = 0; i < ITEM_NUM; i++) {
 		item[i] = new Item;
 	}
+
+
+
+	//data初期化
+	memset(data, 0, sizeof(data));
 
 	//Enemyクラスのデータをクラスのインスタンスに入れる
 	FILE* fp;//ファイルポインタ
@@ -82,7 +89,7 @@ Control::Control() {
 
 	}
 
-	//音声ファイル読み込み
+	//ライブラリで音声ファイル読み込み
 	sound_eshot = LoadSoundMem("MUSIC/enemyshot.mp3");
 	sound_pshot = LoadSoundMem("MUSIC/playershot.mp3");
 	sound_pdamage = LoadSoundMem("MUSIC/playerdamage.mp3");
@@ -93,14 +100,19 @@ Control::Control() {
 	sound_gameclear = LoadSoundMem("MUSIC/clear.ogg");
 	bgm=LoadSoundMem("MUSIC/bgm.ogg");
 	bossbgm = LoadSoundMem("MUSIC/boss.ogg");
-	eshot_flag = false;//音声フラグ初期化
+
+	//音声フラグ初期化
+	eshot_flag = false;
 	pshot_flag = false;
 	pdamage_flag = false;
 	edeath_flag = false;
 	graze_flag = false;
 	itemsound_flag = false;
+	boss_soundflag = false;
 	gameover_soundflag = false;
 	gameclear_soundflag = false;
+
+
 	//他初期化
 	end_flag = false;
 	game_over = false;
@@ -111,19 +123,29 @@ Control::Control() {
 	befe_flag = false;
 	gameclear = false;
 
+	//エフェクト用のカウント
 	eefecount = 0;
 	pefecount = 0;
-	//player死亡エフェクト読み込み
+
+
+	//ライブラリでplayer死亡エフェクト読み込み
 	if (LoadDivGraph("IMAGE/pdeath_efe1.png", 8, 8, 1, 120,120,pdeath_efegh) == -1) {
 		MSG("エラー発生");
 	}
-	if (LoadDivGraph("IMAGE/edeath_efe1.png", 10, 5, 2, 320, 320, edeath_efegh) == -1) {
+	//ライブラリでenemy死亡エフェクト読み込み
+	if(LoadDivGraph("IMAGE/edeath_efe1.png", 10, 5, 2, 320, 320, edeath_efegh) == -1) {
 		MSG("エラー発生");
 	}
+	eefewidth = 320;
+	eefeheight = 320;
+	//エフェクト画像の大きさ
 	pefewidth = 120;
 	pefeheight = 120;
+	eefewidth = 320;
+	eefeheight = 320;
 	deathenemy_x = 0; deathenemy_y = 0;
 
+	//ライブラリで画像読み込み
 	gameovergh = LoadGraph("IMAGE/over1.png");
 	backmenu = LoadGraph("IMAGE/over2.png");
 	cleargh= LoadGraph("IMAGE/clear.png");
@@ -160,6 +182,8 @@ Control::~Control()
 
 }
 
+
+//playerの位置を引数のポインタに与える
 void Control::PlayerCoordinate(double* x, double* y) {
 	double tempx=0,tempy=0;
 
@@ -169,6 +193,7 @@ void Control::PlayerCoordinate(double* x, double* y) {
 	*y = tempy;//yに与える
 }
 
+//enemyの位置を引数のポインタに与える
 void Control::EnemyCoordinate(int index, double* x, double* y) {
 	double tempx=0, tempy=0;
 	
@@ -177,33 +202,26 @@ void Control::EnemyCoordinate(int index, double* x, double* y) {
 	*x = tempx;//xに与える
 	*y = tempy;//yに与える
 }
+
+////Bossの位置を引数のポインタに与える
 void Control::BossCoordinate(int index, double* x, double* y){
 	double tempx = 0, tempy = 0;
-	boss->GetCoordinate(&tempx, &tempy);
+
+	boss->GetCoordinate(&tempx, &tempy);//座標を取得
+
 	*x = tempx;
 	*y = tempy;
 }
-bool Control::CircleJudge(double pcir, double ecir, double pcir_x, double ecir_x, double pcir_y, double ecir_y) {
-	double sum_radius = pcir + ecir;//半径の合計
-	double x_length = pcir_x - ecir_x;
-	double y_length = pcir_y - ecir_y;
-
-	//ピタゴラスの定理からplayerと敵の距離が円形の半径の合計より短ければtrue
-	if (sum_radius * sum_radius >= (x_length * x_length) + (y_length * y_length)) {
-		return true;
-	}else {
-		return false;
-	}
-}
 
 
+//ループ内で実行される関数
 void Control::All() {
 	
 	
-
+	//サウンドフラグを初期化
 	gameover_soundflag = false;
 	gameclear_soundflag = false;
-	eshot_flag = false;//サウンドフラグを初期化
+	eshot_flag = false;
 	pshot_flag = false;
 	edeath_flag = false;
 	pdamage_flag = false;
@@ -236,17 +254,19 @@ void Control::All() {
 			}
 			
 		}
-		EnemyAllJudge();
+		EnemyAllJudge();//当たり判定の処理を行う
 	}
 	else {//Boss出現
 		boss->All();
+		//フラグがたっているならサウンドフラグを立てる
 		if (boss->GetSoundshot()) eshot_flag=true;
+		//当たり判定の処理を行う
 		BossAllJudge();
 	}
 
 	if (game_count == BOSSTIME) {//ボスの出現時間になったら
-		boss->SetFlag(true);
-		boss_soundflag = true;
+		boss->SetFlag(true);   //ボスの生存フラグを立てる
+		boss_soundflag = true;  //ボスのBGMフラグを立てる
 	}
 
 	//グレイズの描画
@@ -264,12 +284,16 @@ void Control::All() {
 	
 
 
+	//右側の画面の描画
+	back->All2();//右の背景画像
+	score->All();//スコア
 
-	back->All2();
-	score->All();
-	DrawGraph(SCORE_X, 360, title, TRUE);
-	DrawGraph(SCORE_X, 390, bgmgh, TRUE);
-	DrawGraph(SCORE_X, 420, image, TRUE);
+	//ライブラリで文字の描画
+	DrawGraph(SCORE_X, 360, title, TRUE);//タイトル
+	DrawGraph(SCORE_X, 390, bgmgh, TRUE);//魔王魂
+	DrawGraph(SCORE_X, 420, image, TRUE);//てぽら倉庫
+
+	//ゲーム終了時の処理
 	if (game_over) {
 		player->SetLiveFlag();
 		DrawGraph(20, 100, gameovergh, TRUE);
@@ -289,14 +313,38 @@ void Control::All() {
 		score->SetScore(SCOREDATA::HIGH_SCORE, temp1);
 	
 	}
+
+	//エフェクトの処理
 	EFECTALL();
+
+	//サウンドの処理
 	SoundAll();
+
+	//ゲーム全体のカウントを増やす
 	++game_count;
 
 
 
 }
 
+
+
+//円形の当たり判定を行う
+bool Control::CircleJudge(double pcir, double ecir, double pcir_x, double ecir_x, double pcir_y, double ecir_y) {
+	double sum_radius = pcir + ecir;//半径の合計
+	double x_length = pcir_x - ecir_x;
+	double y_length = pcir_y - ecir_y;
+
+	//ピタゴラスの定理からplayerと敵の距離が円形の半径の合計より短ければtrue
+	if (sum_radius * sum_radius >= (x_length * x_length) + (y_length * y_length)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+//敵の当たり判定の処理を行う
 void Control::EnemyAllJudge() {
 	double px, py, ex, ey;//敵とplayerの弾の座標
 
@@ -311,7 +359,6 @@ void Control::EnemyAllJudge() {
 						enemy[s]->SetDeathflag();//死亡フラグを立てる
 						player->SetShotflag(i, false);//当たった弾のフラグを戻して
 						edeath_flag = true;//敵死亡音フラグ
-						SetenemyEffect(s);//エフェクトを設定
 						eefe_flag = true;//エフェクトのフラグを立てる
 						enemy[s]->GetCoordinate(&deathenemy_x, &deathenemy_y);//敵の死亡位置を取得
 						score->SetScore(SCOREDATA::SCORE, 100);//一回倒したら100point
@@ -356,18 +403,28 @@ void Control::EnemyAllJudge() {
 								gra_tempflag = true;
 							}
 							//円形の当たり判定がtrueならば
-							 if (CircleJudge(PLAYER_RADIUS, ENESHOT1_RADIOUS, px2, ex2, py2, ey2)) {//円形の当たり判定がtrueならば
+							 if (CircleJudge(PLAYER_RADIUS, ENESHOT2_RADIOUS, px2, ex2, py2, ey2)) {//円形の当たり判定がtrueならば
 								dam_tempflag = true;
 
 							}
 							break;
 						case 2://弾3
 							//当たり判定の前にグレイズ判定を行う
-							if (CircleJudge(GRAZE_RADIUS, ENESHOT2_RADIOUS, px2, ex2, py2, ey2)) {//円形の当たり判定がtrueならば
+							if (CircleJudge(GRAZE_RADIUS, ENESHOT3_RADIOUS, px2, ex2, py2, ey2)) {//円形の当たり判定がtrueならば
 								gra_tempflag = true;
 							}
 							//円形の当たり判定がtrueならば
 							if (CircleJudge(PLAYER_RADIUS, ENESHOT3_RADIOUS, px2, ex2, py2, ey2)) { //円形の当たり判定がtrueならば
+								dam_tempflag = true;
+							}
+							break;
+						case 3://弾3
+						//当たり判定の前にグレイズ判定を行う
+							if (CircleJudge(GRAZE_RADIUS, ENESHOT4_RADIOUS, px2, ex2, py2, ey2)) {//円形の当たり判定がtrueならば
+								gra_tempflag = true;
+							}
+							//円形の当たり判定がtrueならば
+							if (CircleJudge(PLAYER_RADIUS, ENESHOT4_RADIOUS, px2, ex2, py2, ey2)) { //円形の当たり判定がtrueならば
 								dam_tempflag = true;
 							}
 							break;
@@ -429,9 +486,11 @@ void Control::EnemyAllJudge() {
 	}//if(playerが今は生きており点滅していない)の終わり
 	
 
-
+	//スコアの更新
 	score->SetScore(SCOREDATA::LIFE, player->GetLife());
 }
+
+//ボスの当たり判定の処理
 void Control::BossAllJudge() {
 	double px, py, bx, by;//Bossの弾とplayerの座標
 	int boss_hp;//BossのHP
@@ -605,27 +664,25 @@ void Control::BossAllJudge() {
 
 		}//if(playerが今は生きており点滅していない)の終わり
 
+
+		//スコアの更新
 		score->SetScore(SCOREDATA::LIFE, player->GetLife());
 	}
 
-void Control::SetenemyEffect(int i){
-	switch (enemy[i]->GetEnemytype()) {
-	case 0: if (LoadDivGraph("IMAGE/edeath_efe1.png", 10, 5, 2, 320, 320, edeath_efegh) == -1) {
-		       MSG("エラー発生");
-	         }
-		  eefewidth = 320;
-		  eefeheight = 320;
-		  break;
-	}
-}
+//
 
 
+//エフェクトの処理
 void Control::EFECTALL() {
 	int temp1,temp2;
 	double px,py,bx,by;
 
+
+	//それぞれのフラグが立っているなら
 	if (eefe_flag) {
 		temp1 = eefecount;
+
+		//ライブラリで描画
 		DrawGraph((int)deathenemy_x - eefewidth / 2, (int)deathenemy_y - eefeheight / 2, edeath_efegh[temp1], TRUE);
 		++eefecount;
 		if (eefecount == 10) { eefecount = 0; eefe_flag = false;  }
@@ -634,6 +691,8 @@ void Control::EFECTALL() {
 	if (pefe_flag) {
 		player->GetCoordinate(&px, &py);
 		temp2 = pefecount % 40 / 5;
+
+		//ライブラリで描画
 		DrawGraph((int)px - pefewidth / 2, (int)py - pefeheight / 2, pdeath_efegh[temp2], TRUE);
 		++pefecount;
 		if (pefecount == 40) { pefecount = 0; pefe_flag = false; }
@@ -641,19 +700,25 @@ void Control::EFECTALL() {
 	if(befe_flag) {
 		boss->GetCoordinate(&bx, &by);
 		temp1 = eefecount;
+
+		//ライブラリで描画
 		DrawGraph((int)bx - eefewidth / 2, (int)bx - eefeheight / 2, edeath_efegh[temp1], TRUE);
 		++eefecount;
 		if (eefecount == 10) { eefecount = 0; befe_flag = false; }
 	}
 }
 
+
+//ハイスコアを返す
 int Control::GetHiscore() {
 	return score->GetScore(SCOREDATA::HIGH_SCORE);
 }
+
+//音の処理
 void Control::SoundAll() {
-	//ライブラリ、ifのフラグが立ったなら第一引数の音声データをバックグラウンド再生
-	if (eshot_flag) PlaySoundMem(sound_eshot, DX_PLAYTYPE_BACK, TRUE);
+	//ライブラリでifのフラグが立ったなら第一引数の音声データをバックグラウンド再生
 	if (pshot_flag) PlaySoundMem(sound_pshot, DX_PLAYTYPE_BACK, TRUE);
+	if (!game_over&&eshot_flag) PlaySoundMem(sound_eshot, DX_PLAYTYPE_BACK, TRUE);
 	if (pdamage_flag)PlaySoundMem(sound_pdamage, DX_PLAYTYPE_BACK, TRUE);
 	if (edeath_flag)PlaySoundMem(sound_edeath, DX_PLAYTYPE_BACK, TRUE);
 	if (graze_flag)PlaySoundMem(sound_graze, DX_PLAYTYPE_BACK, TRUE);
@@ -665,7 +730,11 @@ void Control::SoundAll() {
 	if (boss_soundflag) PlaySoundMem(bossbgm, DX_PLAYTYPE_LOOP, TRUE);
 	if (CheckHitKey(KEY_INPUT_M) != 0 || gameclear || game_over)StopSoundMem(bossbgm);
 }
+
+//ゲームの初期化
 void Control::Restart() {
+
+	//ループカウントの初期化
 		game_count = 0;
 		//各クラスの解放
 		delete player;
@@ -687,6 +756,7 @@ void Control::Restart() {
 			}
 		}
 
+		//インスタンスの再生成
 		player = new Player;
 		back = new Back;
 		score = new Score;
@@ -701,9 +771,30 @@ void Control::Restart() {
 			enemy[i] = new Enemy(data[i].type, data[i].shottype, data[i].move_pattern, data[i].shot_pattern, data[i].speed, data[i].intime, data[i].stoptime, data[i].shottime, data[i].outtime, data[i].x, data[i].y, data[i].hp, data[i].item);
 
 		}
+		//音声フラグ初期化
+		eshot_flag = false;
+		pshot_flag = false;
+		pdamage_flag = false;
+		edeath_flag = false;
+		graze_flag = false;
+		itemsound_flag = false;
+		gameover_soundflag = false;
+		gameclear_soundflag = false;
+		//他初期化
+		end_flag = false;
 		game_over = false;
 		gameclear = false;
+		deathenemy_num = 0;
+		eefe_flag = false;
+		pefe_flag = false;
+		befe_flag = false;
+		gameclear = false;
 
+		//BGM止める
+		StopSoundMem(bgm);
+		StopSoundMem(bossbgm);
+
+		//ハイスコアを更新する
 		score->SetScore(SCOREDATA::HIGH_SCORE, hiscore);
 	}
 
