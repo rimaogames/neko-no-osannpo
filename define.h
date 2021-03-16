@@ -18,7 +18,7 @@ MessageBoxA(NULL,m, "メッセージ", MB_OK);}
 //ボスの弾の数
 #define BOSSSHOT_NUM 300
 //ボスのHP
-#define BOSS_HP 400
+#define BOSS_HP 500
 //ボスの出現時間
 #define BOSSTIME 7400
 //ボスの横移動の振れ幅
