@@ -2,7 +2,8 @@
 #include "define.h"
 #include <string>
 Score::Score() {
-	//ライブラリ、画像読み込み
+
+	//ライブラリで画像読み込み
 	g_highscore = LoadGraph("IMAGE/highscore.png");
 	g_score = LoadGraph("IMAGE/score.png");
 	g_graze = LoadGraph("IMAGE/b_graze.png");
@@ -18,9 +19,11 @@ Score::Score() {
 	power = 0;
 }
 
+//描画
 void Score::Draw() {
 	char buf[100];
-	
+	memset(buf, 0, sizeof(buf));
+
 	int h_num,s_num,g_num,l_num,p_num;//ハイスコア、スコア、グレイズ、life,powerの文字数を入れる用
 	//ライブラリ、座標(引数１,引数２)に引数３を書く。引数４＝画像の透明度を有効にするかどうか
 	DrawGraph(SCORE_X, 10,g_highscore, TRUE);
@@ -31,7 +34,7 @@ void Score::Draw() {
 
 	h_num = sprintf_s(buf, "%d", high_score);//bufにハイスコアを入れる。numには文字数が入る
 	for (int i = 0; i < h_num; i++) {
-		//ライブラリ、値の書き始めはSOCRE_X+20。にy座標45に数字を記入。
+		//ライブラリで値の書き始めはSOCRE_X+20。にy座標45に数字を記入。
 		//bufには1バイトずつ数字が格納されている。g_number[buf[i]-0]で数字のbuf[i]-を取得
 		DrawGraph((SCORE_X + 20) + (i * NUMBER_LONG), 45, g_number[buf[i] - '0'], TRUE);
 	}
@@ -61,7 +64,7 @@ void Score::Draw() {
 
 
 }
-
+//引数の種類の値を設定
 void Score::SetScore(SCOREDATA data, int a) {//指定したSCOREDATAにaを足す
 	switch (data) {//dataの内容で変える
 	case SCOREDATA::HIGH_SCORE://ハイスコア設定
@@ -82,6 +85,7 @@ void Score::SetScore(SCOREDATA data, int a) {//指定したSCOREDATAにaを足す
 	}
 }
 
+//引数の種類の値を取得
 int Score::GetScore(SCOREDATA data) {
 	switch (data) {
 	case SCOREDATA::HIGH_SCORE:
@@ -105,6 +109,7 @@ int Score::GetScore(SCOREDATA data) {
 	return -1;
 }
 
+//controlで呼び出される実行関数
 void Score::All() {
 	Draw();
 }

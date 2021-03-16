@@ -2,7 +2,10 @@
 #include <time.h>
 #include <cmath>
 #include "Graze.h"
-int Graze::grazegh = 0;
+
+
+int Graze::grazegh = 0;//初期化
+
 Graze::Graze() {
 
 	if (grazegh == 0) {//呼び出された初回に画像を読み込む
@@ -19,6 +22,8 @@ Graze::Graze() {
 	srand((unsigned)time(NULL));//乱数のシードを時間で初期化
 }
 
+
+//グレイズの画像の動き
 void Graze::Move() {
 
 	//初回に角度設定(飛び散る弾はランダムに飛び散る）
@@ -44,26 +49,31 @@ void Graze::Move() {
 
 
 }
+
+//描画
 void Graze::Draw(){
-	//ライブラリ,αブレンドモードに設定（値はalpha)
+	//ライブラリでαブレンドモードに設定（値はalpha)
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-	//ライブラリ、座標(x,y)に拡大率bidtateで描画角度1ラジアンで画像grazephを描画。TRUE＝透明度有効
+	//ライブラリで座標(x,y)に拡大率bidtateで描画角度1ラジアンで画像grazephを描画。TRUE＝透明度有効
 	DrawRotaGraph((int)x, (int)y, bigrate, 1, grazegh, TRUE);
-	//ライブラリ、モードを元に戻す
+	//ライブラリでモードを元に戻す
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 }
 
+//今の実行するかのフラグを返す
 bool Graze::Getflag() {
-	return doflag;//今のフラグを返す
+	return doflag;
 }
-
+//座標設定とフラグを立てる
 void Graze::Setflag(double x, double y) {
 	this->x = x;//座標設定
 	this->y = y;
 	doflag = true;//フラグを立てる
 }
 
+
+//Controlで呼び出す実行関数
 void Graze::All() {
 	if (doflag==true) {//フラグが立っているなら
 		Move();//うごかして　
