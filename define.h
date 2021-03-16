@@ -12,7 +12,7 @@ MessageBoxA(NULL,m, "メッセージ", MB_OK);}
 //プレイヤーの弾の画面中の弾数
 #define PLAYERSHOT_NUM 50
 //敵の数
-#define ENEMY_NUM 32
+#define ENEMY_NUM 142
 //敵の弾の数
 #define ENEMYSHOT_NUM 50
 //ボスの弾の数
@@ -20,7 +20,7 @@ MessageBoxA(NULL,m, "メッセージ", MB_OK);}
 //ボスのHP
 #define BOSS_HP 400
 //ボスの出現時間
-#define BOSSTIME 2050
+#define BOSSTIME 7400
 //ボスの横移動の振れ幅
 #define BOSS_SHAKE 20;
 //グレイズの数
@@ -36,13 +36,14 @@ MessageBoxA(NULL,m, "メッセージ", MB_OK);}
 #define ENEMY_RADIUS 10
 #define BOSS_RADIUS 40
 #define PLAYSHOT_RADIUS 4
-#define ENESHOT1_RADIOUS 2
-#define ENESHOT2_RADIOUS 2
+#define ENESHOT1_RADIOUS 3
+#define ENESHOT2_RADIOUS 3
 #define ENESHOT3_RADIOUS 2
+#define ENESHOT4_RADIOUS 2
 //グレイズ当たり判定用の定義
 #define GRAZE_RADIUS 18
 //アイテムの当たり判定用半径
-#define ITEM_RADIOUS 15
+#define ITEM_RADIOUS 20
 //アイテムの総数(一画面に存在する）
 #define ITEM_NUM 30
 //スコアを書くx座標
@@ -85,15 +86,15 @@ struct ENEMY_DATA {
 };
 
 enum class SCOREDATA {//列挙型
-	HIGH_SCORE,
-	SCORE,
-	GRAZE_SCORE,
-	LIFE,
-	POWER
+	HIGH_SCORE,  //ハイスコア
+	SCORE,       //スコア
+	GRAZE_SCORE,//グレイズ
+	LIFE,      //HP
+	POWER      //パワー
 };
 
 
 
 
 extern int game_count;//ゲームが始まってから何ループ目？
-extern int hiscore;//ゲームが始まってから何ループ目？
+extern int hiscore;//全体でのハイスコアは？

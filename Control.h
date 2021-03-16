@@ -6,6 +6,9 @@
 #include "Score.h"
 #include "Item.h"
 #include "Boss.h"
+
+
+//ゲーム全体の処理
 class Control
 {
 private:
@@ -64,18 +67,17 @@ private:
 	bool gameclear;//ゲームクリア
 
 private:
-	Control();//Main以外にEnemyクラスからインスタンスを取得する為シングルトンにする
-	~Control();
+	Control();//コンストラクタ（シングルトンパターン)
+	~Control();//デストラクタ
 	void SoundAll();
-	void SetenemyEffect(int i);
 	void EFECTALL();
 	void EnemyAllJudge();
 	void BossAllJudge();
 	//円形のあたり判定
 	bool CircleJudge(double pcir, double ecir, double pcir_x, double ecir_x, double pcir_y, double ecir_y);
 public:
-	void All();
-	void Restart();
+	void All();//Menuで呼び出す関数
+	void Restart();//ゲームを初期化する
 	void PlayerCoordinate(double *x, double *y);//playerの座標を取得
 	void EnemyCoordinate(int index, double* x, double* y);//敵（添字index)の座標を取得
 	void BossCoordinate(int index, double* x, double* y);//敵（添字index)の座標を取得

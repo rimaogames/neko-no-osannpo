@@ -1,4 +1,7 @@
 #pragma once
+
+
+//ƒOƒŒƒCƒY‚Ìˆ—
 class Graze
 {
 private:

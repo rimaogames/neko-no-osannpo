@@ -1,5 +1,7 @@
 #pragma once
 #include "define.h"
+
+//ƒAƒCƒeƒ€‚Ìˆ—
 class Item
 { 
 private:

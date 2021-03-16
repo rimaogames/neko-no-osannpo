@@ -1,5 +1,7 @@
 #pragma once
 #include "define.h"
+
+//右に描画するハイスコア、スコア、グレイズ、HP、パワーの処理
 class Score
 {
 private: 

@@ -4,7 +4,7 @@
 //コンストラクタ
 Player::Player()
 {
-	//player画像読み込み
+	//ライブラリでplayer画像読み込み
 	if (LoadDivGraph("IMAGE/Player.png", 12, 3, 4, 32, 32, playergh) == -1){
  		MSG("エラー発生");
     }
@@ -15,7 +15,7 @@ Player::Player()
 	width = 32;
 	height = 32;
 
-	//shot画像読み込み
+	//ライブラリでshot画像読み込み
 	int temp = LoadGraph("IMAGE/playershot.png");
 	int w,h;
 	GetGraphSize(temp, &w,&h);
@@ -31,7 +31,7 @@ Player::Player()
 	memset(shot, 0, sizeof(shot));
 	live = true;
 	damage = false;
-	player_hp = 10;
+	player_hp = 15;
 	damcount = 0;
 	power = 0;
 	powerup_flag = false;
@@ -63,11 +63,13 @@ void Player::Move() {
 	}else if (CheckHitKey(KEY_INPUT_UP) || CheckHitKey(KEY_INPUT_DOWN)) {
 		move = 1.0f;
 	}
+
+
 	//押されたボタンに合わせて移動=4*移動係数
-	if (CheckHitKey(KEY_INPUT_LEFT))   x -= (int)PLAYER_SPEED * move;
-	if (CheckHitKey(KEY_INPUT_RIGHT))  x += (int)PLAYER_SPEED * move;
-	if (CheckHitKey(KEY_INPUT_UP))     y -= (int)PLAYER_SPEED * move;
-	if (CheckHitKey(KEY_INPUT_DOWN))   y += (int)PLAYER_SPEED * move;
+	if (CheckHitKey(KEY_INPUT_LEFT))   x -= (double)PLAYER_SPEED * move;
+	if (CheckHitKey(KEY_INPUT_RIGHT))  x += (double)PLAYER_SPEED * move;
+	if (CheckHitKey(KEY_INPUT_UP))     y -= (double)PLAYER_SPEED * move;
+	if (CheckHitKey(KEY_INPUT_DOWN))   y += (double)PLAYER_SPEED * move;
 
 	//画面の端では止まる。
 	if (x < width/2 )x = width/2;                    //x-width/2<0(画像の左端が0未満)ならx-width/2=0
@@ -128,10 +130,15 @@ void Player::Move() {
 	}
 
 }
+
+//弾の処理
 void Player::Shot(){
 
-	int num = 0;
-	soundshot = false;
+	int num = 0;  //弾がレベルアップした時に使う変数
+	soundshot = false;   //音フラグ
+	
+
+
 	if (!damage) {//ダメージを食らってない時は打てる
 	//6ループごとに発射（キー押している）
 		//キーが押されているかつ4ループに一回
@@ -143,7 +150,7 @@ void Player::Shot(){
 						shot[i].x = x;
 						shot[i].y = y;
 						break;
-					}else if (power >= 5) {
+					}else if (power >= 5) {   //レベルアップした時のショットはplayerから左右に25だけ離れた場所からも弾が発射
 						if (num == 0) {
 							shot[i].flag = true;
 							shot[i].x = x;
@@ -176,49 +183,68 @@ void Player::Shot(){
 		}
 	}
 }
+
+//描画
 void Player::Draw() {
+
 	//shot描画
 	for (int i = 0; i<PLAYERSHOT_NUM;i++){
 		if (shot[i].flag) {
+			//ライブラリで描画
 			DrawGraph((int)shot[i].x-(int)shot[i].width/2,(int)shot[i].y-(int)shot[i].height/2, (int)shot[i].shotgh, TRUE);
 		}
 	}
 	//生きているのならPlayer描画
 	if (live && damage==false) {//今はダメージを食らっていない
-		DrawGraph((int)x - width / 2, (int)y - height / 2, playergh[result], TRUE);//(x,y)が画像の中心になるように
+		//ライブラリで(x,y)が画像の中心になるように描画
+		DrawGraph((int)x - width / 2, (int)y - height / 2, playergh[result], TRUE);
 	}
 	else if (live && damage == true) {//ダメージを食らってしまった
 		if (damcount < 100) {//ダメージを食らって150ループ中は点滅
 			if (damcount % 2==0) {//ダメージを負って2カウントに1回
-				SetDrawBlendMode(DX_BLENDMODE_ALPHA,0);//αブレンディングでPalを0（0に近い程透明)で指定
-				DrawGraph((int)x - width / 2,(int)y - height/2, playergh[result],TRUE);//設定したモードで描画
-				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);//設定を元に戻す
+
+				//ライブラリでαブレンディングでPalを0（0に近い程透明)で指定
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA,0);
+				//ライブラリで設定したモードで描画
+				DrawGraph((int)x - width / 2,(int)y - height/2, playergh[result],TRUE);
+				// ライブラリで設定を元に戻す
+				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			}else {
+				//ライブラリで描画
 				DrawGraph((int)x - width / 2, (int)y - height/2, playergh[result], TRUE);
 			}
 		}
 		++damcount;
-		if (damcount == 100) {
+		if (damcount == 100) {//無敵時間は100ループだけ
 			damage = false;
 			damcount = 0;
 		}
 	}
+	//生きていて弾がパワーアップしているなら左右に分身を描画
 	if (live&&power >= 5) {
-		DrawGraph((int)x + 23 - width / 2, (int)y +10 - height / 2, playergh2[result], TRUE);//(x,y)が画像の中心になるよう
-		DrawGraph((int)x - 23 - width / 2, (int)y + 10 - height / 2, playergh2[result], TRUE);//(x,y)が画像の中心になるよう
+		DrawGraph((int)x + 23 - width / 2, (int)y +10 - height / 2, playergh2[result], TRUE);//ライブラリで(x,y)が画像の中心になるよう描画
+		DrawGraph((int)x - 23 - width / 2, (int)y + 10 - height / 2, playergh2[result], TRUE);//ライブラリで(x,y)が画像の中心になるよう描画
 	}
 }
+
+//プレイヤの位置を引数のポインタに与える
 void Player::GetCoordinate(double* x, double* y) {
 	*x = this->x;//ポインタにplayerのx座標を与える
 	*y = this->y;//ポインタにplayerのy座標を与える
 
 }
+
+//弾を打つ音を出すかのフラグを返す
 bool Player::GetSoundshot(){
 	return soundshot;
 }
+
+//添え字indexの弾が打たれたかのフラグをflagにする
 void Player::SetShotflag(int index, bool flag) {
 	shot[index].flag = flag;
   }
+
+//添え字indexの弾の位置を引数のポインタに与える
 bool Player::GetshotCoordinate(int index, double* x, double* y) {
 	if (shot[index].flag ) {
 		*x = shot[index].x;//x座標
@@ -228,33 +254,47 @@ bool Player::GetshotCoordinate(int index, double* x, double* y) {
 		return false;//画面にないならfalse
 	}
 }
+
+//ダメージを負ったらのフラグを立ててプレイヤのHPを1減らす
 void Player::SetDamageflag(){
 	damage = true;
 	--player_hp;
 }
+
+//ダメージを負ったかのフラグを返す
 bool Player::GetDamageflag() {
 	return damage;
 }
+
+//HPを返す
 int Player::GetLife() {
 	return player_hp;
 }
+
+//パワーの処理
 void Player::SetPower(int a) {
-	power += a;
+	power += a;  //引数の値分パワーアップ（10以上は増えない）
 	if (power > 10)power = 10;
 
-	if (power > 5) {
+	if (power > 5) {  //パワーが５よりあるなら弾をパワーアップ
 		powerup_flag = true;
 	}
 	else if (power <= 5) {
 		powerup_flag = false;
 	}
 }
+
+//パワーを返す
 int Player::GetPower() {
 	return power;
 }
+
+//生きているかのフラグを返す
 void Player::SetLiveFlag() {
 	live = false;
 }
+
+//Controlで呼び出される実行関数
 void Player::All() {
 	
 	Move();//ダメージを負って点滅してない時は動ける

@@ -1,10 +1,12 @@
 #include "Item.h"
 
-int Item::gh[2] = { 0,0 };
+int Item::gh[2] = { 0,0 };//初期化
 
-int Item::sgh[2] = { 0,0 };
+int Item::sgh[2] = { 0,0 };//初期化
+
 Item::Item() {
-	//ライブラリ、初回のみ画像読み込み
+
+	//ライブラリで初回のみ画像読み込み
 	if (gh[0] == 0 && sgh[0] == 0) {
 		gh[0] = LoadGraph("IMAGE/item1.png");
 		gh[1] = LoadGraph("IMAGE/item2.png");
@@ -24,6 +26,7 @@ Item::Item() {
 
 }
 
+//動く
 void Item::Move() {
 	double temp;
 	rad = 0.04 * count;//4rad=2度ずつ回転
@@ -47,7 +50,7 @@ void Item::Move() {
 }
 
 void Item::Draw()
-{//ライブラリ、(x,y)に拡大率1.0で角度rad(2つめは0)でgh[type]を描画。TRUE=透明度有効
+{//ライブラリで(x,y)に拡大率1.0で角度rad(2つめは0)でgh[type]を描画。TRUE=透明度有効
 	DrawRotaGraph(x, y, 1.0, rad, gh[type], TRUE);
 	DrawRotaGraph(x, y, 1.0, 0, sgh[type], TRUE);
 }
@@ -69,20 +72,24 @@ void Item::Setflag(double x, double y, int type) {
 	do_flag = true;//item出現フラグを立てる
 }
 
-bool Item::Getflag() {//フラグを取得
+//実行するかのフラグを取得
+bool Item::Getflag() {
 	return do_flag;
 }
 
-void Item::Get_Position(double* x, double* y) {//今の座標を取得
+//今の座標を引数のポインタに与える
+void Item::Get_Position(double* x, double* y) {
 	*x= this->x;
 	*y = this->y;
 }
 
-int Item::GetType() {//今のItemのタイプを取得
+//今のItemのタイプを返す
+int Item::GetType() {
 	return type;
 }
 
-void Item::All() {//他のクラスで呼ぶ実行関数
+//他のクラスで呼ぶ実行関数
+void Item::All() {
 	Move();
 	Draw();
 }

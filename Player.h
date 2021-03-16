@@ -1,5 +1,7 @@
 #pragma once
 #include "define.h"
+
+//ƒvƒŒƒCƒ„‚Ìˆ—
 class Player {
 private:
 	//x,yÀ•W
