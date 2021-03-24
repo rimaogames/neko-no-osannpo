@@ -33,7 +33,7 @@ private:
 	int shotcount;
 	//合計角度
 	int angle;
-    //増加量(sin波に使う)  サインを取得するための角度
+	//増加量(sin波に使う)  サインを取得するための角度
 	int rise;
 	//移動パターン2の時の増加量(sin波に使う) 位相が1フレームに変化する量
 	int rise2;
@@ -74,7 +74,7 @@ public:
 	int SetHP(int damage);//BossのHPをセット
 	void SetShotflag(int index, bool flag);//添字がindexのshotを指定したflagにする
 	bool GetSoundshot();//サウンドフラグを取得
-	bool GetshotCoordinate(int index, double* x, double* y,int  *pattern);//画面にある敵の弾の座標とtypeを取得(enemyクラスの同名の関数にpatternを加えた)
+	bool GetshotCoordinate(int index, double* x, double* y, int* pattern);//画面にある敵の弾の座標とtypeを取得(enemyクラスの同名の関数にpatternを加えた)
 	void SetGrazeflag(int index);//添え字indexの弾のグレイズ判定フラグを立てる
 	bool GetGrazeflag(int index);//添え字indexの弾のグレイズ判定フラグを返す
 	void All();//実行（Controlで呼び出す)

@@ -45,7 +45,7 @@ public:
 	void SetGrazeflag(int index);//添え字indexの弾のグレイズ判定フラグを立てる
 	bool GetGrazeflag(int index);//添え字indexの弾のグレイズ判定フラグを返す
 	//コンストラクタで敵のパターンを一括で決めるように（敵画像、敵種類、移動パターン、座標、出現開始、停止、帰還、弾画像、弾種類、弾パターン、弾発射時間、弾速さ）
-	Enemy(int type, int shottype,int move_pattern,int shot_pattern, int speed, int intime,int stoptime,int shottime, int outtime, int x,int y,int hp,int item);
+	Enemy(int type, int shottype, int move_pattern, int shot_pattern, int speed, int intime, int stoptime, int shottime, int outtime, int x, int y, int hp, int item);
 	bool All();
 };
 

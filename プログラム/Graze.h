@@ -21,4 +21,3 @@ public:
 	bool Getflag();//ƒtƒ‰ƒO‚Ì¡‚Ìó‘Ô‚ğ•Ô‚·
 	void All();	//Às
 };
-

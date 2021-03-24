@@ -1,37 +1,41 @@
 #pragma once
+#include "SceneBase.h"
 
-typedef enum {      //列挙型
-	Scene_Menu,    //メニュー画面
-	Scene_Game,    //ゲーム画面
-	Scene_Stop,    //一時停止画面
-} eScene;
+//選択項目
+typedef enum { //列挙型
+	mGame,        //ゲーム開始 0
+	mConfig,    //設定 1
+	mHowto,      //遊び方　2
+	mNum,        //本項目の数 3
+} mScene;
 
-
-//画面の処理
-class Menu
+//メニュー画面
+class Menu :public SceneBase
 {
 private:
-	//現在の画面(シーン)
-	int Scene;
-	//ゲームやり直しフラグ
-	bool restart_flag;
-	//サウンドハンドル
-	int topsound;     //トップに戻る
-	int gamestartsound;  //ゲーム開始
-	int stopsound;  //一時停止
-	//ハンドルをならすかどうかのフラグ
-	bool topsound_flag;
-	bool gamestartsound_flag;
-	bool stopsound_flag;
+   int menugraph;//メニュー画面
 
+   //文字のグラフィックハンドル
+   int start1_gh; //開始オレンジ
+   int start0_gh; //開始灰色
+   int config1_gh; //設定オレンジ
+   int config0_gh; //せってい灰色
+   int how1_gh;    //あそびかたオレンジ
+   int how0_gh; //あそびかた灰色
+
+   int cursor[6];//カーソル
+   int NowSelect;//今選択中の項目
+   int count; //カウント
+
+   int nowselect_sound;//選択中の音ハンドル
+   bool nowselectsound_flag; //nowselect_soundを鳴らすかのフラグ
 private:
-	void SoundAll();//画面移動の時の音の処理
-    void UpdateScene();//画面の更新
-	void Top();//メニュー画面
-    void Game();//ゲーム画面
-	void Stop();//一時停止画面
+	void Draw(); //描画
 public:
-	Menu();//コンストラクタ
-	void  All();//Mainで呼び出す関数
+	Menu();
+	void Initialize(); //初期化
+	void Finalize();//終了の処理
+	void Update(); //オーバーライド
+	void All();  //オーバーライド
 };
 

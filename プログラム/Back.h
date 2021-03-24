@@ -1,9 +1,9 @@
 #pragma once
 class Back
 {
-private: 
+private:
 	double x, y;//座標
-	int backgh,backgh2;//グラフィックハンドル
+	int backgh, backgh2;//グラフィックハンドル
 private:
 	void Draw();//ゲーム画面左の背景の描画
 	void Draw2();//ゲーム画面右の背景の描画

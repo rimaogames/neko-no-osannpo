@@ -1,4 +1,6 @@
 #pragma once
+#include "define.h"
+#include "SceneBase.h"
 #include "Player.h"
 #include "Back.h"
 #include "Enemy.h"
@@ -9,7 +11,7 @@
 
 
 //ゲーム全体の処理
-class Control
+class Control:public SceneBase
 {
 private:
 	//各クラスの生成（ポインタ）
@@ -18,7 +20,7 @@ private:
 	Enemy* enemy[ENEMY_NUM];
 	Boss* boss;
 	Graze* graze[GRAZE_NUM];
-	Item*  item[ITEM_NUM];
+	Item* item[ITEM_NUM];
 	Score* score;
 	ENEMY_DATA data[ENEMY_NUM];
 	int sound_eshot;//敵のショットサウンドハンドル
@@ -56,15 +58,20 @@ private:
 	int gameovergh;//ゲームオーバーの画像
 	int cleargh;//ゲームクリアの画像
 	int backmenu;//メニューに戻る案内画像
+
 	int deathenemy_num;//死んだ敵の添字
-	double deathenemy_x, deathenemy_y;
+	double deathenemy_x, deathenemy_y; //敵の死亡場所を取得用の変数
 	bool eefe_flag;//死亡エフェクトを出すかのフラグ(敵）
 	bool pefe_flag;//死亡エフェクトを出すかのフラグ(player)
 	bool befe_flag;//死亡エフェクトを出すかのフラグ(Boss)
 
+	int FirstBossHP; //ボスの初期体力を保持する関数
+
+	bool now_game;//ゲームをプレイ中か
 	bool end_flag;//ゲームが終わったか
 	bool game_over;//ゲームオーバーか
 	bool gameclear;//ゲームクリア
+
 
 private:
 	Control();//コンストラクタ（シングルトンパターン)
@@ -76,11 +83,14 @@ private:
 	//円形のあたり判定
 	bool CircleJudge(double pcir, double ecir, double pcir_x, double ecir_x, double pcir_y, double ecir_y);
 public:
-	void All();//Menuで呼び出す関数
-	void Restart();//ゲームを初期化する
-	void PlayerCoordinate(double *x, double *y);//playerの座標を取得
+	void Update();
+	void Initialize();
+	void Finalize();
+	void All();//Menuで呼び出す関数(オーバーライド）
+	void PlayerCoordinate(double* x, double* y);//playerの座標を取得
 	void EnemyCoordinate(int index, double* x, double* y);//敵（添字index)の座標を取得
 	void BossCoordinate(int index, double* x, double* y);//敵（添字index)の座標を取得
+	void GetResult(int* x, int* y,int* z);//最終結果を取得
 	int GetHiscore();//ハイスコアを取得
 	static Control& Instance() {//クラス静的変数、自身のインスタンスを格納
 		static Control control;//静的変数として宣言

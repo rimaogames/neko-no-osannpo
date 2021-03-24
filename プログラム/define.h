@@ -1,37 +1,49 @@
-#pragma once
+ï»¿#pragma once
 #include "DxLib.h"
 #include <Windows.h>
 
-//ƒƒbƒZ[ƒWƒ{ƒbƒNƒX
+//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹
 #define MSG(m){\
-MessageBoxA(NULL,m, "ƒƒbƒZ[ƒW", MB_OK);}
-//ƒvƒŒƒCƒ„[‚Ì•à‚­ƒXƒs[ƒh
+MessageBoxA(NULL,m, "ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸", MB_OK);}
+//ã‚­ãƒ¼ã®ç¨®é¡
+#define KEY 256
+//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ­©ãã‚¹ãƒ”ãƒ¼ãƒ‰
 #define PLAYER_SPEED 4
-//‰æ–ÊƒXƒNƒ[ƒ‹‚ÌƒXƒs[ƒh
+//ç”»é¢ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®ã‚¹ãƒ”ãƒ¼ãƒ‰
 #define SCROOL_SPEED 2
-//ƒvƒŒƒCƒ„[‚Ì’e‚Ì‰æ–Ê’†‚Ì’e”
+//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å¼¾ã®ç”»é¢ä¸­ã®å¼¾æ•°
 #define PLAYERSHOT_NUM 50
-//“G‚Ì”
+//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½“åŠ›(Easy)
+#define EPLAY_HP 15
+//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½“åŠ›(Normal)
+#define NPLAY_HP 10
+//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½“åŠ›(Hard)
+#define HPLAY_HP 7
+//æ•µã®æ•°
 #define ENEMY_NUM 142
-//“G‚Ì’e‚Ì”
+//æ•µã®å¼¾ã®æ•°
 #define ENEMYSHOT_NUM 50
-//ƒ{ƒX‚Ì’e‚Ì”
+//ãƒœã‚¹ã®å¼¾ã®æ•°
 #define BOSSSHOT_NUM 300
-//ƒ{ƒX‚ÌHP
-#define BOSS_HP 500
-//ƒ{ƒX‚ÌoŒ»ŠÔ
+//ãƒœã‚¹ã®HP(Easy)
+#define EBOSS_HP 300
+//ãƒœã‚¹ã®HP(Normal)
+#define NBOSS_HP 400
+//ãƒœã‚¹ã®HP(Hard)
+#define HBOSS_HP 500
+//ãƒœã‚¹ã®å‡ºç¾æ™‚é–“
 #define BOSSTIME 7400
-//ƒ{ƒX‚Ì‰¡ˆÚ“®‚ÌU‚ê•
+//ãƒœã‚¹ã®æ¨ªç§»å‹•ã®æŒ¯ã‚Œå¹…
 #define BOSS_SHAKE 20;
-//ƒOƒŒƒCƒY‚Ì”
+//ã‚°ãƒ¬ã‚¤ã‚ºã®æ•°
 #define GRAZE_NUM 50
-//’e‚Ì‘¬‚³
+//å¼¾ã®é€Ÿã•
 #define SHOT_SPEED 13
-//‰æ–Ê‚Ì‘å‚«‚³
+//ç”»é¢ã®å¤§ãã•
 #define WIDTH 400
 #define HEIGHT 480
 
-//“–‚½‚è”»’è—p‚Ì’è‹`
+//å½“ãŸã‚Šåˆ¤å®šç”¨ã®å®šç¾©
 #define PLAYER_RADIUS 4
 #define ENEMY_RADIUS 10
 #define BOSS_RADIUS 40
@@ -40,61 +52,85 @@ MessageBoxA(NULL,m, "ƒƒbƒZ[ƒW", MB_OK);}
 #define ENESHOT2_RADIOUS 3
 #define ENESHOT3_RADIOUS 2
 #define ENESHOT4_RADIOUS 2
-//ƒOƒŒƒCƒY“–‚½‚è”»’è—p‚Ì’è‹`
+//ã‚°ãƒ¬ã‚¤ã‚ºå½“ãŸã‚Šåˆ¤å®šç”¨ã®å®šç¾©
 #define GRAZE_RADIUS 18
-//ƒAƒCƒeƒ€‚Ì“–‚½‚è”»’è—p”¼Œa
+//ã‚¢ã‚¤ãƒ†ãƒ ã®å½“ãŸã‚Šåˆ¤å®šç”¨åŠå¾„
 #define ITEM_RADIOUS 20
-//ƒAƒCƒeƒ€‚Ì‘”(ˆê‰æ–Ê‚É‘¶İ‚·‚éj
+//ã‚¢ã‚¤ãƒ†ãƒ ã®ç·æ•°(ä¸€ç”»é¢ã«å­˜åœ¨ã™ã‚‹ï¼‰
 #define ITEM_NUM 30
-//ƒXƒRƒA‚ğ‘‚­xÀ•W
+//ã‚¹ã‚³ã‚¢ã‚’æ›¸ãxåº§æ¨™
 #define SCORE_X 420
-//”š1•¶š‚Ì•@17
+//æ•°å­—1æ–‡å­—ã®å¹…ã€€17
 #define NUMBER_LONG 17
 
-struct SHOT {//’e‚Ì\‘¢‘Ì
-	double x, y;//À•W
-	int shotgh;//ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹
-	int width, height;//‰æ‘œ‚Ì‘å‚«‚³
-	bool flag;//’e‚ª”­Ë’†‚ª”Û‚©
+struct SHOT {//å¼¾ã®æ§‹é€ ä½“
+	double x, y;//åº§æ¨™
+	int shotgh;//ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒãƒ³ãƒ‰ãƒ«
+	int width, height;//ç”»åƒã®å¤§ãã•
+	bool flag;//å¼¾ãŒç™ºå°„ä¸­ãŒå¦ã‹
 };
-struct ENE_SHOT {//“G‚Ì’e
-	double x, y;//À•W
-	double rad; //Šp“xƒ‰ƒWƒAƒ“=Šp“x*ƒÎ/180
-	int shotgh;//ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹
-	int width, height;//‰æ‘œ‚Ì‘å‚«‚³
-	int pattern;//’e‚Ìí—Ş
-	int speed;//’e‚Ìí—Ş
-	bool flag;//’e‚ª”­Ë’†‚ª”Û‚©
-	bool graflag;//ƒOƒŒƒCƒY”»’èƒtƒ‰ƒOi‚©‚·‚Á‚½‚©‚Ç‚¤‚©j
+struct ENE_SHOT {//æ•µã®å¼¾
+	double x, y;//åº§æ¨™
+	double rad; //è§’åº¦ãƒ©ã‚¸ã‚¢ãƒ³=è§’åº¦*Ï€/180
+	int shotgh;//ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒãƒ³ãƒ‰ãƒ«
+	int width, height;//ç”»åƒã®å¤§ãã•
+	int pattern;//å¼¾ã®ç¨®é¡
+	int speed;//å¼¾ã®ç¨®é¡
+	bool flag;//å¼¾ãŒç™ºå°„ä¸­ãŒå¦ã‹
+	bool graflag;//ã‚°ãƒ¬ã‚¤ã‚ºåˆ¤å®šãƒ•ãƒ©ã‚°ï¼ˆã‹ã™ã£ãŸã‹ã©ã†ã‹ï¼‰
 
 };
 
 struct ENEMY_DATA {
-	int type;//“G‚Ìí—Ş
-	int shottype;//’e‚Ìí—Ş
-	int move_pattern;//ˆÚ“®ƒpƒ^[ƒ“
-	int shot_pattern;//’e‚Ìƒpƒ^[ƒ“
-	int speed;//’e‚ÌƒXƒs[ƒh
-	int intime;//oŒ»‚·‚é
-	int stoptime;//’â~ŠÔ
-	int shottime; //’e‚ğ”­Ë‚·‚é
-	int outtime;//‹AŠÒ‚·‚é
-	int x;//xÀ•W
-	int y;//yÀ•W
+	int type;//æ•µã®ç¨®é¡
+	int shottype;//å¼¾ã®ç¨®é¡
+	int move_pattern;//ç§»å‹•ãƒ‘ã‚¿ãƒ¼ãƒ³
+	int shot_pattern;//å¼¾ã®ãƒ‘ã‚¿ãƒ¼ãƒ³
+	int speed;//å¼¾ã®ã‚¹ãƒ”ãƒ¼ãƒ‰
+	int intime;//å‡ºç¾ã™ã‚‹æ™‚åˆ»
+	int stoptime;//åœæ­¢æ™‚é–“
+	int shottime; //å¼¾ã‚’ç™ºå°„ã™ã‚‹æ™‚åˆ»
+	int outtime;//å¸°é‚„ã™ã‚‹æ™‚åˆ»
+	int x;//xåº§æ¨™
+	int y;//yåº§æ¨™
 	int hp;//HP
-	int item;//ƒAƒCƒeƒ€
+	int item;//ã‚¢ã‚¤ãƒ†ãƒ 
 };
 
-enum class SCOREDATA {//—ñ‹“Œ^
-	HIGH_SCORE,  //ƒnƒCƒXƒRƒA
-	SCORE,       //ƒXƒRƒA
-	GRAZE_SCORE,//ƒOƒŒƒCƒY
+//ã‚¹ã‚³ã‚¢é–¢ä¿‚
+enum class SCOREDATA {//åˆ—æŒ™å‹
+	HIGH_SCORE,  //ãƒã‚¤ã‚¹ã‚³ã‚¢
+	SCORE,       //ã‚¹ã‚³ã‚¢
+	GRAZE_SCORE,//ã‚°ãƒ¬ã‚¤ã‚º
 	LIFE,      //HP
-	POWER      //ƒpƒ[
+	POWER      //ãƒ‘ãƒ¯ãƒ¼
 };
 
+//ç”»é¢
+ enum  class eScene{      //åˆ—æŒ™å‹
+	Scene_Menu,    //ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç”»é¢
+	Scene_Game,    //ã‚²ãƒ¼ãƒ ç”»é¢
+	Scene_Config,  //è¨­å®šç”»é¢
+	Scene_Howto,   //éŠã³æ–¹ç”»é¢
+	Scene_Stop,   //ä¸€æ™‚åœæ­¢ç”»é¢
+	Scene_Result,  //çµæœç”»é¢
+	Scene_None,   //ç”»é¢ãªã—
+} ;
 
+ //é›£æ˜“åº¦
+ typedef enum { //åˆ—æŒ™å‹
+	 Easy,        //ç°¡å˜ 0
+	 Normal,    //æ™®é€š 1
+	 Hard,      //é›£ã—ã„ã€€2      
+	 dNum,        //æœ¬é …ç›®ã®æ•° 3
+ }DIF;
 
+ //éŸ³ã®æœ‰ç„¡ã€€
+ typedef enum {
+	 ON,
+	 OFF,
+	 muNUM,
+ }SETMUSIC;
 
-extern int game_count;//ƒQ[ƒ€‚ªn‚Ü‚Á‚Ä‚©‚ç‰½ƒ‹[ƒv–ÚH
-extern int hiscore;//‘S‘Ì‚Å‚ÌƒnƒCƒXƒRƒA‚ÍH
+extern int game_count;//ã‚²ãƒ¼ãƒ ãŒå§‹ã¾ã£ã¦ã‹ã‚‰ä½•ãƒ«ãƒ¼ãƒ—ç›®ï¼Ÿ
+extern int hiscore;//å…¨ä½“ã§ã®ãƒã‚¤ã‚¹ã‚³ã‚¢ã¯ï¼Ÿ

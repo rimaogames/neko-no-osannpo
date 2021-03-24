@@ -26,7 +26,8 @@ Enemy::Enemy(int type, int shottype, int move_pattern, int shot_pattern, int spe
 
 	//敵のタイプで読み込む画像を変える
 	switch (enemy_type)
-	{case 0:
+	{
+	case 0:
 		//ライブラリで画像読み込み
 		LoadDivGraph("IMAGE/enemy.png", 3, 3, 1, 32, 32, enemygh);
 		width = 32;
@@ -152,34 +153,34 @@ void Enemy::Move() {
 
 //敵は画面内にいるのか
 bool Enemy::LocateCheck() {
-		if (x < -20 || x> 400 || y < -20 || y>500) {
-			return true;
-		}
-		else {
-			return false;
-		}
+	if (x < -20 || x> 400 || y < -20 || y>500) {
+		return true;
 	}
+	else {
+		return false;
+	}
+}
 
 
 //弾の処理
 void Enemy::Shot() {
-	 
+
 	//Controlクラスの参照
-	Control &control = Control::Instance();
+	Control& control = Control::Instance();
 	double px, py;//playerの座標を保持する関数
 
 	//ゲームのループが発射の時刻になったらフラグを立てる
 	if (shottime == game_count) shotflag = true;
-	
+
 	if (shotflag == true) {//フラグが立っているならば
 
 		soundshot = false;//ショット音フラグをfalseにする
 
 		if (deathflag == false) {//敵が生きている時には弾を発射する準備の処理
 
-			control.PlayerCoordinate(&px,&py);//Playerの位置情報取得
+			control.PlayerCoordinate(&px, &py);//Playerの位置情報取得
 			//始めにplayerと敵の座標から逆正接（単位はラジアン）を求める。
-			if (shotcount == 0){
+			if (shotcount == 0) {
 				rad = std::atan2(py - y, px - x);
 			}
 			switch (shot_pattern) {//弾のパターンで分岐して弾のセットを行う
@@ -351,7 +352,7 @@ void Enemy::Draw() {
 		number = count % 40 / 10;//0,1,2,3と動く
 		if (number == 3)number = 1;//0,1,2,1と動くようにする
 		//ライブラリで描画
-		DrawGraph((int)x-width/2, (int)y-height/2, enemygh[number], TRUE);//描画
+		DrawGraph((int)x - width / 2, (int)y - height / 2, enemygh[number], TRUE);//描画
 	}
 }
 

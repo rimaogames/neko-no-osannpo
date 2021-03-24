@@ -1,5 +1,6 @@
 #include "Boss.h"
 #include "Control.h"
+#include "Config.h"
 #define _USE_MATH_DEFINES
 #include <cmath>
 #define RAD 180
@@ -8,7 +9,7 @@ Boss::Boss() {
 	//座標の初期位置
 	x = 200;
 	y = -100;
-	pre_x = 200; 
+	pre_x = 200;
 	pre_y = -100;
 
 	//ライブラリで画像読み込み
@@ -38,11 +39,9 @@ Boss::Boss() {
 		shot[i].speed = 0;
 	}
 
-    //初期化 
+	//初期化 
 	rise = 2;  //振動の速さは2とする
 	rise2 = 2;
-	hp = BOSS_HP;
-	pre_hp = BOSS_HP;
 	angle = 0;
 	move_pattern = 0;
 	shot_pattern = 0;
@@ -58,6 +57,23 @@ Boss::Boss() {
 	soundshot = false;
 	live_flag = false;
 	shot_flag = false;
+
+	//難易度でボスの体力を変える
+	switch (Config::select_dif) {
+	case Easy:
+		hp = EBOSS_HP;
+		pre_hp = EBOSS_HP;
+		break;
+	case Normal:
+		hp = NBOSS_HP;
+		pre_hp = NBOSS_HP;
+		break;
+	case Hard:
+		hp = HBOSS_HP;
+		pre_hp = HBOSS_HP;
+		break;
+
+	}
 
 }
 
@@ -144,11 +160,12 @@ void Boss::MovePattern2() {
 			rise2 = 2;//反転
 			wait = true;//停止フラグを立てる
 
-		} else if( x==360) {//右端までいったら
+		}
+		else if (x == 360) {//右端までいったら
 			rise2 = -2; //反転
 			wait = true; //停止フラグを立てる
 		}
-     }
+	}
 
 	if (wait) {//10カウントだけ停止
 		++waitcount;
@@ -200,7 +217,7 @@ void Boss::MoveDefalt() {
 	if (angle == 90) {//sin値＝１だから目的地まで移動したから目的地を変える
 		SetMovepattern(pre_move_pattern + 1);
 		SetShotpattern(pre_shot_pattern + 1);
-		nodamage_flag= false;
+		nodamage_flag = false;
 
 		if (move_pattern == 3)MoveInit(200, 160, 2);
 	}
@@ -259,139 +276,139 @@ void Boss::MoveInit(double ix, double iy, int state) {
 //弾を打つ
 void Boss::Shot() {
 	int index = 0;//空いている弾の添字
-	int shotnum=0; //弾を打ってからのカウント
+	int shotnum = 0; //弾を打ってからのカウント
 	static double rad;//角度（ラジアン）弾の発射時に使用
 	bool scount_flag = false;//shotcountを初期化するかどうか
 	double px, py; //playerの座標を保持する変数
 
 
 	//Controlクラスの参照
-	Control &control = Control::Instance();
+	Control& control = Control::Instance();
 
-		soundshot = false;
+	soundshot = false;
 
-		if (nodamage_flag) {//ダメージが一定数食らったらshotcountを0に戻す
-			scount_flag = true;
+	if (nodamage_flag) {//ダメージが一定数食らったらshotcountを0に戻す
+		scount_flag = true;
+	}
+
+	control.PlayerCoordinate(&px, &py);//プレイヤの位置を取得
+
+	if (shotcount == 0)rad = std::atan2(py - y, px - x);//弾の打ち始めに角度（ラジアン）を計算
+
+	switch (shot_pattern) {
+	case 0://放射状に10ループに1回25発打つ
+		if (shotcount % 10 == 0) {//プレイヤーの周り（前後30度）に4ループに1初打つ
+			while ((index = ShotSearch()) != -1) {//弾の準備
+				shot[index].pattern = 0;
+				shot[index].shotgh = shotgh[2];
+				shot[index].width = w2;
+				shot[index].height = h2;
+				shot[index].speed = 4;
+				//プレイヤーの位置+360度の範囲で30方向に打つ
+				shot[index].rad = atan2(py - y, px - x) + ((double)shotnum * 12 * M_PI / RAD);//360÷30=12
+				++shotnum;
+				if (shotnum == 30)break;
+				soundshot = true;//弾を打つ音を鳴らすフラグを立てる
+			}
 		}
-		
-			control.PlayerCoordinate(&px, &py);//プレイヤの位置を取得
+		break;
+	case 1://プレイヤーの周りに弾を定期的に打つ
+		if (shotcount % 10 == 0 && shotcount <= 40) {//ル-プカウント0,6,12,18の4回打つ
+			while ((index = ShotSearch()) != -1) {//空きがある弾の添字を取得する(-1の時は弾の空きがない）
+				shot[index].pattern = 1;
+				shot[index].shotgh = shotgh[0];
+				shot[index].width = w;
+				shot[index].height = h;
+				shot[index].speed = 6;
+				//一回に6発打つ
 
-			if (shotcount == 0)rad = std::atan2(py - y, px - x);//弾の打ち始めに角度（ラジアン）を計算
-
-			switch (shot_pattern) {
-			case 0://放射状に10ループに1回25発打つ
-				if (shotcount % 10 == 0) {//プレイヤーの周り（前後30度）に4ループに1初打つ
-					while ((index = ShotSearch()) != -1) {//弾の準備
-						shot[index].pattern = 0;
-						shot[index].shotgh = shotgh[2];
-						shot[index].width = w2;
-						shot[index].height = h2;
-						shot[index].speed = 4;
-						//プレイヤーの位置+360度の範囲で30方向に打つ
-						shot[index].rad = atan2(py - y, px - x) + ((double)shotnum * 12 * M_PI / RAD);//360÷30=12
-						++shotnum;
-						if (shotnum == 30)break;
-						soundshot = true;//弾を打つ音を鳴らすフラグを立てる
-					}
+				if (shotnum == 0) {//プレイヤーの位置から30度左
+					shot[index].rad = rad - (30 * M_PI / RAD);
 				}
+				else if (shotnum == 1) {//プレイヤーの位置から15度左
+					shot[index].rad = rad - (15 * M_PI / RAD);
+				}
+				else if (shotnum == 2) {//プレイヤーの位置
+					shot[index].rad = rad;
+				}
+				else if (shotnum == 3) {//プレイヤーの位置から15度右
+					shot[index].rad = rad + (15 * M_PI / RAD);
+				}
+				else if (shotnum == 4) {//プレイヤーの位置から30度右
+					shot[index].rad = rad + (30 * M_PI / RAD);
+				}
+
+
+
+				soundshot = true;//弾を打つ音を鳴らすフラグを立てる
+
+				++shotnum;
+				if (shotnum == 5)break;
+			}
+		}
+
+		break;
+	case 2://プレイヤーの周り（前後30度）に4ループに1初打つ
+		if (shotcount % 4 == 0) {
+			if ((index = ShotSearch()) != -1) {
+				shot[index].pattern = 2;
+				shot[index].shotgh = shotgh[1];
+				shot[index].width = w1;
+				shot[index].height = h1;
+				shot[index].speed = 5;
+				//プレイヤーの位置＋(-30～30の範囲の乱数)度
+				shot[index].rad = atan2(py - y, px - x) + (double)(rand() % 61 - 30) * M_PI / RAD;
+
+				soundshot = true;//弾を打つ音を鳴らすフラグを立てる
+			}
+		}
+		break;
+
+	default:
+		break;
+	}
+
+
+
+	for (int i = 0; i < BOSSSHOT_NUM; i++) {
+		if (shot[i].flag == true) {//フラグが立っているならば弾を移動させる
+			switch (shot[i].pattern) {
+			case 0:
+				shot[i].x += shot[i].speed * cos(shot[i].rad);
+				shot[i].y += shot[i].speed * sin(shot[i].rad);
 				break;
-			case 1://プレイヤーの周りに弾を定期的に打つ
-				if (shotcount % 10 == 0 && shotcount <= 40) {//ル-プカウント0,6,12,18の4回打つ
-					while ((index = ShotSearch()) != -1) {//空きがある弾の添字を取得する(-1の時は弾の空きがない）
-						shot[index].pattern = 1;
-						shot[index].shotgh = shotgh[0];
-						shot[index].width = w;
-						shot[index].height = h;
-						shot[index].speed = 6;
-						//一回に6発打つ
 
-						if (shotnum == 0) {//プレイヤーの位置から30度左
-							shot[index].rad = rad - (30 * M_PI / RAD);
-						}
-						else if (shotnum == 1) {//プレイヤーの位置から15度左
-							shot[index].rad = rad - (15 * M_PI / RAD);
-						}
-						else if (shotnum == 2) {//プレイヤーの位置
-							shot[index].rad = rad;
-						}
-						else if (shotnum == 3) {//プレイヤーの位置から15度右
-							shot[index].rad = rad + (15 * M_PI / RAD);
-						}
-						else if (shotnum == 4) {//プレイヤーの位置から30度右
-							shot[index].rad = rad + (30 * M_PI / RAD);
-						}
+			case 1://playerに向かって発射
+				shot[i].x += shot[i].speed * cos(shot[i].rad);
+				shot[i].y += shot[i].speed * sin(shot[i].rad);
 
-
-
-						soundshot = true;//弾を打つ音を鳴らすフラグを立てる
-
-						++shotnum;
-						if (shotnum == 5)break;
-					}
-				}
-
+				if (!scount_flag && shotcount == 60) scount_flag = true;//打ったら60までは待機してcountを戻す
 				break;
-			case 2://プレイヤーの周り（前後30度）に4ループに1初打つ
-				if (shotcount % 4 == 0) {
-					if ((index = ShotSearch()) != -1) {
-						shot[index].pattern = 2;
-						shot[index].shotgh = shotgh[1];
-						shot[index].width = w1;
-						shot[index].height = h1;
-						shot[index].speed = 5;
-						//プレイヤーの位置＋(-30～30の範囲の乱数)度
-						shot[index].rad = atan2(py - y, px - x) + (double)(rand() % 61-30) * M_PI / RAD;
+			case 2:
+				shot[i].x += shot[i].speed * cos(shot[i].rad);
+				shot[i].y += shot[i].speed * sin(shot[i].rad);
 
-						soundshot = true;//弾を打つ音を鳴らすフラグを立てる
-					}
-				}
 				break;
 
 			default:
 				break;
 			}
 
+			if (ShotLocateCheck(i))shot[i].flag = false;
+		}
+	}
+
+	++shotcount;
+
+	if (scount_flag)shotcount = 0;//フラグが立っているならは0にする
 
 
-			for (int i = 0; i < BOSSSHOT_NUM; i++) {
-				if (shot[i].flag == true) {//フラグが立っているならば弾を移動させる
-					switch (shot[i].pattern) {
-					case 0:
-						shot[i].x += shot[i].speed * cos(shot[i].rad);
-						shot[i].y += shot[i].speed * sin(shot[i].rad);
-						break;
 
-					case 1://playerに向かって発射
-						shot[i].x += shot[i].speed * cos(shot[i].rad);
-						shot[i].y += shot[i].speed * sin(shot[i].rad);
-
-						if (!scount_flag && shotcount == 60) scount_flag = true;//打ったら60までは待機してcountを戻す
-						break;
-					case 2:
-						shot[i].x += shot[i].speed * cos(shot[i].rad);
-						shot[i].y += shot[i].speed * sin(shot[i].rad);
-
-						break;
-
-					default:
-						break;
-					}
-
-					if (ShotLocateCheck(i))shot[i].flag = false;
-				}
-			}
-
-			++shotcount;
-
-			if (scount_flag)shotcount = 0;//フラグが立っているならは0にする
-		
-		
-	
 }
 
 
 //弾の構造体のなかで空きがある添え字を返す
-int Boss::ShotSearch() { 
+int Boss::ShotSearch() {
 	bool do_setting = false;//設定をしたか（現在空きの弾があるのか）
 	int i;
 	for (i = 0; i < BOSSSHOT_NUM; i++) {
@@ -403,11 +420,11 @@ int Boss::ShotSearch() {
 			break;
 		}
 	}
-    if (!do_setting) {//設定をしてないならば
-			i=-1;//-1を返すようにする
+	if (!do_setting) {//設定をしてないならば
+		i = -1;//-1を返すようにする
 	}
-			return i;//設定した添え字or空きがないなら-1を返す
-		
+	return i;//設定した添え字or空きがないなら-1を返す
+
 }
 
 //弾が画面内にある？
@@ -436,10 +453,10 @@ bool Boss::GetshotCoordinate(int index, double* x, double* y, int* pattern) {
 
 //Bossの位置をポインタに与える
 void Boss::GetCoordinate(double* x, double* y) {
-		*x = this->x;//ポインタにBossのx座標を与える
-		*y = this->y;//ポインタにBossのy座標を与える
+	*x = this->x;//ポインタにBossのx座標を与える
+	*y = this->y;//ポインタにBossのy座標を与える
 
-	}
+}
 
 //BossのHPの設定
 int Boss::SetHP(int damage) {
@@ -447,7 +464,7 @@ int Boss::SetHP(int damage) {
 
 	//hpからdamageを削って返す
 	pre_hp = hp;
-	hp -=damage;
+	hp -= damage;
 
 	return hp;
 }

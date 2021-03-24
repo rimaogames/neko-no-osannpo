@@ -1,7 +1,7 @@
 #include "Back.h"
 #include "define.h"
 
-Back::Back():x(0),y(0) {
+Back::Back() :x(0), y(0) {
     backgh = LoadGraph("IMAGE/back.png");//バックの背景を読み込み
     backgh2 = LoadGraph("IMAGE/back2.png");//バック（右側）を読み込み
 }

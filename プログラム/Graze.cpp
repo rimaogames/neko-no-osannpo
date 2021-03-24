@@ -51,7 +51,7 @@ void Graze::Move() {
 }
 
 //描画
-void Graze::Draw(){
+void Graze::Draw() {
 	//ライブラリでαブレンドモードに設定（値はalpha)
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 	//ライブラリで座標(x,y)に拡大率bidtateで描画角度1ラジアンで画像grazephを描画。TRUE＝透明度有効
@@ -75,10 +75,10 @@ void Graze::Setflag(double x, double y) {
 
 //Controlで呼び出す実行関数
 void Graze::All() {
-	if (doflag==true) {//フラグが立っているなら
+	if (doflag == true) {//フラグが立っているなら
 		Move();//うごかして　
 		Draw();//書く
-	 }
+	}
 }
 
 

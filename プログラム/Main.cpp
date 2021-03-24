@@ -1,27 +1,38 @@
 #include "define.h"
-#include "Menu.h"
+#include "SceneMgr.h"
+#include "InputKey.h"
 int game_count = 0;//ゲームのカウント
-int hiscore=0;//ハイスコア
+int hiscore = 0;//ハイスコア
 
 
-//ウィンドウの作成とゲームのループ実行
+//ライブラリでウィンドウの作成とゲームのループ実行
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-	ChangeWindowMode(TRUE);//ゲーム画面を表示
+	ChangeWindowMode(TRUE);//ライブラリでゲーム画面を表示
 	if (DxLib_Init() == -1) return -1;//DXライブラリの初期化
-	SetDrawScreen(DX_SCREEN_BACK);//ライブラリ、描画先を裏画面に
+	SetDrawScreen(DX_SCREEN_BACK);//ライブラリで描画先を裏画面に
+	
+	//SceneMgrの参照
+	SceneMgr& scenemgr = SceneMgr::Instance();
 
-	Menu *menu = new Menu;
+	//キーの入力管理クラスのインスタンス
+	InputKey input;
 
 	while (!ProcessMessage()) {//ウィンドウが閉じるまで
 
-	    ClearDrawScreen();//ライブラリ、描画画面の前の画像消す(裏画面)
-		
-	    menu->All();//メニューのALLを実行
+		//ライブラリで描画画面の前の画像消す(裏画面)
+		ClearDrawScreen();
 
-		ScreenFlip();//ライブラリ、表画面に転送
+		//キーの入力状態の更新
+		input.Update_Keystate();
+
+		//scenemgrのループ関数を実行
+		scenemgr.Loop();
+
+		//ライブラリで表画面に転送
+		ScreenFlip();
 
 	}
-	
-	DxLib_End();
+
+	DxLib_End(); //DXライブラリの終了処理
 	return 0;
 }

@@ -3,7 +3,7 @@
 
 //アイテムの処理
 class Item
-{ 
+{
 private:
 	static int gh[2], sgh[2];//グラフィックハンドル
 	int type;//どっちのタイプのアイテムか
@@ -21,7 +21,7 @@ public:
 	void Setflag(double x, double y, int type);//フラグとアイテムの種類と初期位置の設定
 	bool Getflag();//フラグを取得
 	void DeleteItem();//Itemを消す
-	void Get_Position(double *x,double *y);//Itemの座標を取得
+	void Get_Position(double* x, double* y);//Itemの座標を取得
 	int GetType();//Itemの種類を取得
 	void All();//実行
 

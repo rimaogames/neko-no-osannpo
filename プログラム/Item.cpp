@@ -1,4 +1,5 @@
 #include "Item.h"
+#include "define.h"
 
 int Item::gh[2] = { 0,0 };//初期化
 
@@ -42,7 +43,8 @@ void Item::Move() {
 		if ((y - pre_y) + 1 == 0) {//頂点まで行ったら落下
 			fall_flag = true;
 		}
-	}else if(fall_flag) {
+	}
+	else if (fall_flag) {
 		y += 2.5;//落下
 	}
 	if (y > 500)DeleteItem();//画面外に行ったら消す
@@ -56,7 +58,7 @@ void Item::Draw()
 }
 
 void Item::DeleteItem() {//カウントとフラグを初期化
-	count =0;
+	count = 0;
 	fall_flag = false;
 	do_flag = false;
 }
@@ -79,7 +81,7 @@ bool Item::Getflag() {
 
 //今の座標を引数のポインタに与える
 void Item::Get_Position(double* x, double* y) {
-	*x= this->x;
+	*x = this->x;
 	*y = this->y;
 }
 
