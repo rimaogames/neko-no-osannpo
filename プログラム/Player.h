@@ -26,7 +26,7 @@ private:
 	//弾
 	SHOT shot[PLAYERSHOT_NUM];
 
-    //弾のカウント
+	//弾のカウント
 	int count;
 
 	//弾のパワー
@@ -40,7 +40,7 @@ private:
 	bool damage;//ダメージを負ったか
 	int  player_hp;//HP
 	int  damcount; //ダメージ中のカウント
-	
+
 
 	bool powerup_flag;
 private:
@@ -61,4 +61,6 @@ public:
 	int  GetPower();//パワーを取得
 	void All();
 };
+
+
 

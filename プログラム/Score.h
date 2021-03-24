@@ -4,8 +4,8 @@
 //右に描画するハイスコア、スコア、グレイズ、HP、パワーの処理
 class Score
 {
-private: 
-	int g_highscore,g_score,g_graze,g_hp,g_power;//ボードのグラフィックハンドル
+private:
+	int g_highscore, g_score, g_graze, g_hp, g_power;//ボードのグラフィックハンドル
 	int g_number[10];//数字のグラフィックハンドル
 	int high_score;//ハイスコア
 	int score;//今のスコア

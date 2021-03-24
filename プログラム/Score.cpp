@@ -9,8 +9,8 @@ Score::Score() {
 	g_graze = LoadGraph("IMAGE/b_graze.png");
 	g_hp = LoadGraph("IMAGE/HP.png");
 	g_power = LoadGraph("IMAGE/power.png");
-	LoadDivGraph("IMAGE/number.png",10,10,1,17,29,g_number);
-	
+	LoadDivGraph("IMAGE/number.png", 10, 10, 1, 17, 29, g_number);
+
 	//初期化
 	high_score = 0;
 	score = 0;
@@ -24,9 +24,9 @@ void Score::Draw() {
 	char buf[100];
 	memset(buf, 0, sizeof(buf));
 
-	int h_num,s_num,g_num,l_num,p_num;//ハイスコア、スコア、グレイズ、life,powerの文字数を入れる用
+	int h_num, s_num, g_num, l_num, p_num;//ハイスコア、スコア、グレイズ、life,powerの文字数を入れる用
 	//ライブラリ、座標(引数１,引数２)に引数３を書く。引数４＝画像の透明度を有効にするかどうか
-	DrawGraph(SCORE_X, 10,g_highscore, TRUE);
+	DrawGraph(SCORE_X, 10, g_highscore, TRUE);
 	DrawGraph(SCORE_X, 90, g_score, TRUE);
 	DrawGraph(SCORE_X, 170, g_graze, TRUE);
 	DrawGraph(SCORE_X, 240, g_hp, TRUE);
@@ -53,10 +53,10 @@ void Score::Draw() {
 
 	l_num = sprintf_s(buf, "%d", life);//bufにlifeを入れる。l_numには文字数が入る
 	for (int i = 0; i < l_num; i++) {
-		DrawGraph((SCORE_X +20)+ (i * NUMBER_LONG), 270, g_number[buf[i] - '0'], TRUE);
+		DrawGraph((SCORE_X + 20) + (i * NUMBER_LONG), 270, g_number[buf[i] - '0'], TRUE);
 	}
 
-		p_num = sprintf_s(buf, "%d", power);//bufにpowerを入れる。p_numには文字数が入る
+	p_num = sprintf_s(buf, "%d", power);//bufにpowerを入れる。p_numには文字数が入る
 	for (int i = 0; i < p_num; i++) {
 		DrawGraph((SCORE_X + 20) + (i * NUMBER_LONG), 330, g_number[buf[i] - '0'], TRUE);
 	}
@@ -77,7 +77,7 @@ void Score::SetScore(SCOREDATA data, int a) {//指定したSCOREDATAにaを足す
 		graze_score += a;
 		break;
 	case SCOREDATA::LIFE:
-		life  = a;//lifeをaの値に設定
+		life = a;//lifeをaの値に設定
 		if (life < 0)life = 0;
 		break;
 	case SCOREDATA::POWER:
@@ -92,7 +92,7 @@ int Score::GetScore(SCOREDATA data) {
 		return high_score;
 		break;
 	case SCOREDATA::SCORE:
-		return score ;
+		return score;
 		break;
 	case SCOREDATA::GRAZE_SCORE:
 		return graze_score;
