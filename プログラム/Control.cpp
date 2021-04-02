@@ -3,6 +3,7 @@
 #include "InputKey.h"
 #include "Config.h"
 #include "SceneMgr.h"
+#include "Menu.h"
 #include <fstream>
 #include<string>
 #include <sstream>
@@ -86,8 +87,8 @@ Control::Control() {
 	sound_item = LoadSoundMem("MUSIC/item.mp3");
 	sound_gameover = LoadSoundMem("MUSIC/gameover.ogg");
 	sound_gameclear = LoadSoundMem("MUSIC/clear.ogg");
-	bgm = LoadSoundMem("MUSIC/bgm.ogg");
 	bossbgm = LoadSoundMem("MUSIC/boss.ogg");
+
 
 	//ライブラリでplayer死亡エフェクト読み込み
 	if (LoadDivGraph("IMAGE/pdeath_efe1.png", 8, 8, 1, 120, 120, pdeath_efegh) == -1) {
@@ -114,7 +115,7 @@ Control::Control() {
 	title = LoadGraph("IMAGE/title.png");
 	bgmgh = LoadGraph("IMAGE/bgm.png");
 	image = LoadGraph("IMAGE/image.png");
-	
+	gamestartgh = LoadGraph("IMAGE/gamestart.png");
 }
 
 
@@ -198,7 +199,6 @@ void Control::Update() {
 
 //ループ内で実行される関数
 void Control::All() {
-
 
 	//サウンドフラグを初期化
 	gameover_soundflag = false;
@@ -307,7 +307,9 @@ void Control::All() {
 
 	//サウンドの処理
 	SoundAll();
-
+	if (game_count < 40) {
+		DrawGraph(100, 100, gamestartgh, TRUE);
+	}
 	
 	
 		//ゲーム全体のカウントを増やす
@@ -788,9 +790,34 @@ void Control::Initialize() {
 		break;
 	}
 
-
 	//ハイスコアを更新する
-	score->SetScore(SCOREDATA::HIGH_SCORE, hiscore);
+	//switch (Menu::stage) {
+	//case STAGE1:
+		score->SetScore(SCOREDATA::HIGH_SCORE, hiscore);
+		//break;
+	/*case STAGE2:
+		score->SetScore(SCOREDATA::HIGH_SCORE, hiscore2);
+		break;
+	case STAGE3:
+		score->SetScore(SCOREDATA::HIGH_SCORE, hiscore3);
+		break;
+	}*/
+
+	switch (Menu::stage) {
+	case STAGE1:
+		bgm = LoadSoundMem("MUSIC/bgm.ogg");
+		break;
+	case STAGE2:
+		bgm = LoadSoundMem("MUSIC/bgm3.ogg");
+		break;
+	case STAGE3:
+		bgm = LoadSoundMem("MUSIC/bgm2.ogg");
+		break;
+	default:
+		break;
+	}
+
+
 
 }
 
@@ -821,6 +848,7 @@ void Control::Finalize() {
 
 
 	now_game = false;
+
 	StopSoundMem(bgm);
 	StopSoundMem(bossbgm);
 }

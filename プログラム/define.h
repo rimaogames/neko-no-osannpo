@@ -44,7 +44,7 @@ MessageBoxA(NULL,m, "メッセージ", MB_OK);}
 #define HEIGHT 480
 
 //当たり判定用の定義
-#define PLAYER_RADIUS 4
+#define PLAYER_RADIUS 2
 #define ENEMY_RADIUS 10
 #define BOSS_RADIUS 40
 #define PLAYSHOT_RADIUS 4
@@ -132,5 +132,15 @@ enum class SCOREDATA {//列挙型
 	 muNUM,
  }SETMUSIC;
 
+
+ //ステージ
+ typedef enum {
+	 STAGE1,
+	 STAGE2,
+	 STAGE3,
+     sNum,
+ } STAGE;
 extern int game_count;//ゲームが始まってから何ループ目？
 extern int hiscore;//全体でのハイスコアは？
+//extern int hiscore2;//全体でのハイスコアは？
+//extern int hiscore3;//全体でのハイスコアは？

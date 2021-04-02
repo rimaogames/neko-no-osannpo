@@ -3,7 +3,8 @@
 #include "InputKey.h"
 int game_count = 0;//ゲームのカウント
 int hiscore = 0;//ハイスコア
-
+//int hiscore2 = 0;
+//int hiscore3 = 0;
 
 //ライブラリでウィンドウの作成とゲームのループ実行
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {

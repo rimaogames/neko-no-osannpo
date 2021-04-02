@@ -1,8 +1,19 @@
 #include "Back.h"
 #include "define.h"
-
+#include "Menu.h"
 Back::Back() :x(0), y(0) {
-    backgh = LoadGraph("IMAGE/back.png");//バックの背景を読み込み
+    switch (Menu::stage) {
+    case STAGE1:
+        backgh = LoadGraph("IMAGE/back.png");//バックの背景を読み込み
+        break;
+    case STAGE2:
+        backgh = LoadGraph("IMAGE/back_2.png");//バックの背景を読み込み
+        break;
+    case STAGE3:
+        backgh = LoadGraph("IMAGE/back_3.png");//バックの背景を読み込み
+        break;
+    }
+
     backgh2 = LoadGraph("IMAGE/back2.png");//バック（右側）を読み込み
 }
 

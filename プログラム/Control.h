@@ -58,6 +58,9 @@ private:
 	int gameovergh;//ゲームオーバーの画像
 	int cleargh;//ゲームクリアの画像
 	int backmenu;//メニューに戻る案内画像
+	int gamestartgh;//ゲームスタート文字の画像
+
+
 
 	int deathenemy_num;//死んだ敵の添字
 	double deathenemy_x, deathenemy_y; //敵の死亡場所を取得用の変数
