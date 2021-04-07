@@ -35,8 +35,18 @@ void Result::Initialize() {
 	//コントロールの参照
 	Control& control = Control::Instance();
 	//ハイスコアを書き換え
-	hiscore = control.GetHiscore();
-}
+	switch (Menu::stage) {
+	case STAGE1:
+		hiscore = control.GetHiscore();
+		break;
+	case STAGE2:
+		hiscore2 = control.GetHiscore();
+		break;
+	case STAGE3:
+		hiscore3 = control.GetHiscore();
+		break;
+	}
+	}
 
 //終了の処理
 void Result::Finalize() {

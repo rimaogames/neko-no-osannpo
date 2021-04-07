@@ -4,7 +4,7 @@
 //ラスボスの処理
 class Boss
 {
-private:
+public:
 	//座標
 	double x, y;
 	//直前の座標を保持する変数
@@ -28,7 +28,7 @@ private:
 	//弾を打つかどうかのフラグ
 	bool shot_flag;
 	//弾の構造体
-	ENE_SHOT shot[BOSSSHOT_NUM];
+	ENE_SHOT bshot[BOSSSHOT_NUM];
 	//弾の打っている間のカウント
 	int shotcount;
 	//合計角度
@@ -50,21 +50,21 @@ private:
 	//生きているかどうかのフラグ
 	bool live_flag;
 private:
-	void Move();//動く
-	void Appear();//出現
 	void MovePattern1();//移動パターン１
 	void MovePattern2();//移動パターン２
 	void MovePattern3();//移動パターン３
-	void MoveDefalt();//移動パターン変化するためデフォルト位置に戻る
-	void MoveInit(double x, double y, int state);//移動の目的地の変更
-	void SetMovepattern(int pattern);//移動パターン変更
-	void SetShotpattern(int pattern);//ショットパターン変更
 	void Shot();//弾を打つ
-	bool ShotLocateCheck(int i);//弾が画面外にあるか
-	int ShotSearch();//フラグが立っていない弾を設定しその添字を返す
 	void Draw();//描画
 public:
 	Boss();//コンストラクタ
+	void Appear();//出現
+	void Move();//動く
+	void SetMovepattern(int pattern);//移動パターン変更
+	void SetShotpattern(int pattern);//ショットパターン変更
+	bool ShotLocateCheck(int i);//弾が画面外にあるか
+	int ShotSearch();//フラグが立っていない弾を設定しその添字を返す
+	void MoveDefalt();//移動パターン変化するためデフォルト位置に戻る
+	void MoveInit(double x, double y, int state);//移動の目的地の変更
 	void SetFlag(bool a);//フラグを立てる
 	bool GetFlag();//フラグを取得
 	bool GetNodamageFlag();//無敵時間かどうかのフラグを取得

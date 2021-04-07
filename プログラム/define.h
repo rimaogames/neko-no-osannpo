@@ -24,7 +24,7 @@ MessageBoxA(NULL,m, "メッセージ", MB_OK);}
 //敵の弾の数
 #define ENEMYSHOT_NUM 50
 //ボスの弾の数
-#define BOSSSHOT_NUM 300
+#define BOSSSHOT_NUM 400
 //ボスのHP(Easy)
 #define EBOSS_HP 300
 //ボスのHP(Normal)
@@ -142,5 +142,5 @@ enum class SCOREDATA {//列挙型
  } STAGE;
 extern int game_count;//ゲームが始まってから何ループ目？
 extern int hiscore;//全体でのハイスコアは？
-//extern int hiscore2;//全体でのハイスコアは？
-//extern int hiscore3;//全体でのハイスコアは？
+extern int hiscore2;//全体でのハイスコアは？
+extern int hiscore3;//全体でのハイスコアは？

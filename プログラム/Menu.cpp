@@ -120,7 +120,10 @@ void Menu::Update() {
 
 
 	}
-	else if (select_stage == true && InputKey::GetKeyPush(KEY_INPUT_RETURN)) {
+	else if (select_stage == true && InputKey::GetKeyPush(KEY_INPUT_SPACE)) {
+		select_stage = false;
+	}
+    else if (select_stage == true && InputKey::GetKeyPush(KEY_INPUT_RETURN)) {
 		scenemgr.ChangeScene(eScene::Scene_Game);//シーンをゲームに変更
 	}
 

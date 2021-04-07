@@ -191,7 +191,7 @@ void Enemy::Shot() {
 							shot[i].flag = true;
 							shot[i].x = x;//敵の今の位置
 							shot[i].y = y;
-							shot[i].rad = rad;// std::atan2(py - y, px - x);
+							shot[i].rad = rad;
 							break;//一発セットしたらbreak
 						}
 					}
@@ -205,7 +205,7 @@ void Enemy::Shot() {
 							shot[i].flag = true;
 							shot[i].x = x;//敵の今の位置
 							shot[i].y = y;
-							shot[i].rad = rad;//std::atan2(py - y, px - x);
+							shot[i].rad = rad;
 							break;//一発セットしたらbreak
 						}
 					}

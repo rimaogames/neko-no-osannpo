@@ -153,6 +153,8 @@
   <ItemGroup>
     <ClCompile Include="Back.cpp" />
     <ClCompile Include="Boss.cpp" />
+    <ClCompile Include="Boss2.cpp" />
+    <ClCompile Include="Boss3.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="Control.cpp" />
     <ClCompile Include="Enemy.cpp" />
@@ -171,6 +173,8 @@
   <ItemGroup>
     <ClInclude Include="Back.h" />
     <ClInclude Include="Boss.h" />
+    <ClInclude Include="Boss2.h" />
+    <ClInclude Include="Boss3.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="Control.h" />
     <ClInclude Include="define.h" />

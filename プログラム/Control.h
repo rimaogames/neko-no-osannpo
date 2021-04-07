@@ -3,12 +3,18 @@
 #include "SceneBase.h"
 #include "Player.h"
 #include "Back.h"
+#include "Menu.h"
 #include "Enemy.h"
 #include "Graze.h"
 #include "Score.h"
 #include "Item.h"
 #include "Boss.h"
+#include "Boss2.h"
+#include "Boss3.h"
 
+class Boss2;
+class Boss;
+class Boss3;
 
 //ゲーム全体の処理
 class Control:public SceneBase
@@ -18,11 +24,14 @@ private:
 	Player* player;
 	Back* back;
 	Enemy* enemy[ENEMY_NUM];
-	Boss* boss;
 	Graze* graze[GRAZE_NUM];
 	Item* item[ITEM_NUM];
 	Score* score;
 	ENEMY_DATA data[ENEMY_NUM];
+	Boss* boss;
+	Boss2* boss2;
+	Boss3* boss3;
+
 	int sound_eshot;//敵のショットサウンドハンドル
 	int sound_pshot;//playerのショットサウンドハンドル
 	int sound_pdamage;//playerのダメージサウンドハンドル

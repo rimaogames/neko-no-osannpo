@@ -13,6 +13,8 @@ using namespace std;
 //コンストラクタ（データの読み込みだけして後はInitializeで初期化)
 Control::Control() {
 
+
+
 	//data初期化
 	memset(data, 0, sizeof(data));
 
@@ -25,8 +27,7 @@ Control::Control() {
 	bool flag = false;
 	memset(buf, 0, sizeof(buf));
 	//読み取り専用でファイルを開ける
-	if ((fopen_s(&fp, "IMAGE/enemydata.csv", "r")) != 0) MSG("エラー");
-
+	if ((fopen_s(&fp, "IMAGE/enemydata1.csv", "r")) != 0) MSG("エラー");
 	while (fgetc(fp) != '\n') {};//1行目は何もしない
 
 	while (1) {//読み取り終わるまでループ
@@ -87,7 +88,6 @@ Control::Control() {
 	sound_item = LoadSoundMem("MUSIC/item.mp3");
 	sound_gameover = LoadSoundMem("MUSIC/gameover.ogg");
 	sound_gameclear = LoadSoundMem("MUSIC/clear.ogg");
-	bossbgm = LoadSoundMem("MUSIC/boss.ogg");
 
 
 	//ライブラリでplayer死亡エフェクト読み込み
@@ -137,7 +137,7 @@ Control::~Control()
 		for (int i = 0; i < ITEM_NUM; ++i) {
 			delete item[i];
 		}
-		delete boss;
+
 		for (int i = 0; i < ENEMY_NUM; i++) {
 			if (enemy[i] != NULL) {//まだ消滅してないenemyがあったらdelete
 				delete enemy[i];
@@ -170,7 +170,18 @@ void Control::EnemyCoordinate(int index, double* x, double* y) {
 void Control::BossCoordinate(int index, double* x, double* y) {
 	double tempx = 0, tempy = 0;
 
-	boss->GetCoordinate(&tempx, &tempy);//座標を取得
+
+	switch (Menu::stage) {
+	case STAGE1:
+		boss->GetCoordinate(&tempx, &tempy);//座標を取得
+		break;
+	case STAGE2:
+		boss2->GetCoordinate(&tempx, &tempy);//座標を取得
+		break;
+	case STAGE3:
+		boss3->GetCoordinate(&tempx, &tempy);//座標を取得
+		break;
+	}
 
 	*x = tempx;
 	*y = tempy;
@@ -219,9 +230,22 @@ void Control::All() {
 	if (player->GetSoundshot()) {
 		pshot_flag = true;
 	}
+	bool temp;
+	switch (Menu::stage) {
+	case STAGE1:
+		temp = boss->GetFlag();
+		break;
+	case STAGE2:
+		temp = boss2->GetFlag();
+		break;
+	case STAGE3:
+		temp = boss3->GetFlag();
+		break;
+	default:
+		break;
+	}
 
-
-	if (!boss->GetFlag()) {//まだbossいない
+	if (!temp) {//まだbossいない
 		for (int i = 0; i < ENEMY_NUM; i++) {
 			if (enemy[i] != NULL) {//インスタンスが生成されているならば
 				//フラグがたっているならサウンドフラグを立てる
@@ -239,15 +263,46 @@ void Control::All() {
 		EnemyAllJudge();//当たり判定の処理を行う
 	}
 	else {//Boss出現
-		boss->All();
+		bool temp;
+
+		switch (Menu::stage) {
+		case STAGE1:
+			boss->All();
+			temp = boss->GetSoundshot();
+			break;
+		case STAGE2:
+			boss2->All();
+			temp = boss2->GetSoundshot();
+			break;
+		case STAGE3:
+			boss3->All();
+			temp=boss3->GetSoundshot();
+			break;
+		default:
+			break;
+		}
+
 		//フラグがたっているならサウンドフラグを立てる
-		if (boss->GetSoundshot()) eshot_flag = true;
+		if (temp) eshot_flag = true;
 		//当たり判定の処理を行う
 		BossAllJudge();
 	}
 
 	if (game_count == BOSSTIME) {//ボスの出現時間になったら
-		boss->SetFlag(true);   //ボスの生存フラグを立てる
+		switch (Menu::stage) {
+		case STAGE1:
+			boss->SetFlag(TRUE);
+			break;
+		case STAGE2:
+			boss2->SetFlag(TRUE);
+			break;
+		case STAGE3:
+			boss3->SetFlag(TRUE);
+			break;
+		default:
+			break;
+		}
+
 		boss_soundflag = true;  //ボスのBGMフラグを立てる
 	}
 
@@ -272,8 +327,8 @@ void Control::All() {
 
 	//ライブラリで文字の描画
 	DrawGraph(SCORE_X, 360, title, TRUE);//タイトル
-	DrawGraph(SCORE_X, 390, bgmgh, TRUE);//魔王魂
-	DrawGraph(SCORE_X, 420, image, TRUE);//てぽら倉庫
+	//DrawGraph(SCORE_X, 390, bgmgh, TRUE);//魔王魂
+	//DrawGraph(SCORE_X, 420, image, TRUE);//てぽら倉庫
 
 	//ゲーム終了時の処理
 	if (game_over) {
@@ -485,36 +540,83 @@ void Control::BossAllJudge() {
 	int boss_hp;//BossのHP
 	int item_number = 0;//Bossが出すアイテム
 	int setix, setiy;//アイテムの座標を設定する用変数
-
+	bool temp,temp2;
+	switch (Menu::stage) {
+	case STAGE1:
+		temp = boss->GetNodamageFlag();
+		temp2 = boss->GetFlag();
+		break;
+	case STAGE2:
+		temp = boss2->GetNodamageFlag();
+		temp2 = boss2->GetFlag();
+		break;
+	case STAGE3:
+		temp = boss3->GetNodamageFlag();
+		temp2 = boss3->GetFlag();
+		break;
+	default:
+		break;
+	}
 	//playerの弾と敵の当たり判定
-	if (!boss->GetNodamageFlag()) {//ボスは今は無敵ではない
+	if (!temp) {//ボスは今は無敵ではない
 		for (int i = 0; i < PLAYERSHOT_NUM; i++) {//弾の数だけチェック
 			if (player->GetshotCoordinate(i, &px, &py)) {//playerの弾が画面にあるならば座標を貰って
-				if (boss->GetFlag()) {//bossが生きている
-					boss->GetCoordinate(&bx, &by);//bossの座標を貰う
+				if (temp2) {//bossが生きている
+					//boss->GetCoordinate(&bx, &by);//bossの座標を貰う
+					switch (Menu::stage) {
+					case STAGE1:
+						boss->GetCoordinate(&bx, &by);//bossの座標を貰う
+						break;
+					case STAGE2:
+						boss2->GetCoordinate(&bx, &by);//bossの座標を貰う
+						break;
+					case STAGE3:
+						boss3->GetCoordinate(&bx, &by);//bossの座標を貰う
+						break;
+					default:
+						break;
+					}
+
+
+
+
 					if (CircleJudge(PLAYSHOT_RADIUS, BOSS_RADIUS, px, bx, py, by)) {//円形の当たり判定がtrueならば
-						boss_hp = boss->SetHP(1);
+						//boss_hp = boss->SetHP(1);
+						switch (Menu::stage) {
+						case STAGE1:
+							boss_hp = boss->SetHP(1);
+							break;
+						case STAGE2:
+							boss_hp = boss2->SetHP(1);
+							break;
+						case STAGE3:
+							boss_hp = boss3->SetHP(1);
+							break;
+						default:
+							break;
+						}
+
+
 						player->SetShotflag(i, false);//当たった弾のフラグを戻して
 						score->SetScore(SCOREDATA::SCORE, 50);//一回100point
 
-
-						if (FirstBossHP * 2 / 3 >= boss_hp && boss->GetPreHP() > FirstBossHP * 2 / 3) {//HPが2/3になった
-
-							befe_flag = true;//ダメージエフェクトフラグ
-							edeath_flag = true;//弾当たり音フラグ
-							score->SetScore(SCOREDATA::SCORE, 5000);//5000point
-							for (int j = 0; j < ITEM_NUM; j++) {//アイテムを出現させる
-								if (!item[j]->Getflag()) {//添え字jのアイテムが出現していない
-									setix = (rand() % 151 - 75) + bx;
-									setiy = (rand() % 151 - 75) + by;
-									item[j]->Setflag(setix, setiy, 0);//スコアアイテムをセットする
-									++item_number;
-									if (item_number == 7)break;//アイテム7コ出したら終わり
-								}
-							}
-							boss->SetDamage();
+						int boss_prehp;
+						switch (Menu::stage) {
+						case STAGE1:
+							boss_prehp = boss->GetPreHP();
+							break;
+						case STAGE2:
+							boss_prehp = boss2->GetPreHP();
+							break;
+						case STAGE3:
+							boss_prehp = boss3->GetPreHP();
+							break;
+						default:
+							break;
 						}
-						else if (FirstBossHP * 1 / 3 >= boss_hp && boss->GetPreHP() > FirstBossHP * 1 / 3) {//HPが1/3になった
+
+						if (FirstBossHP * 2 / 3 >= boss_hp && boss_prehp > FirstBossHP * 2 / 3) {//HPが2/3になった
+
 							befe_flag = true;//ダメージエフェクトフラグ
 							edeath_flag = true;//弾当たり音フラグ
 							score->SetScore(SCOREDATA::SCORE, 5000);//5000point
@@ -527,11 +629,69 @@ void Control::BossAllJudge() {
 									if (item_number == 7)break;//アイテム7コ出したら終わり
 								}
 							}
-							boss->SetDamage();
+
+							switch (Menu::stage) {
+							case STAGE1:
+								boss->SetDamage();
+								break;
+							case STAGE2:
+								boss2->SetDamage();
+								break;
+							case STAGE3:
+								boss3->SetDamage();
+								break;
+							default:
+								break;
+							}
+							//boss->SetDamage();
+						}
+						else if (FirstBossHP * 1 / 3 >= boss_hp && boss_prehp > FirstBossHP * 1 / 3) {//HPが1/3になった
+							befe_flag = true;//ダメージエフェクトフラグ
+							edeath_flag = true;//弾当たり音フラグ
+							score->SetScore(SCOREDATA::SCORE, 5000);//5000point
+							for (int j = 0; j < ITEM_NUM; j++) {//アイテムを出現させる
+								if (!item[j]->Getflag()) {//添え字jのアイテムが出現していない
+									setix = (rand() % 151 - 75) + bx;
+									setiy = (rand() % 151 - 75) + by;
+									item[j]->Setflag(setix, setiy, 0);//スコアアイテムをセットする
+									++item_number;
+									if (item_number == 7)break;//アイテム7コ出したら終わり
+								}
+							}
+
+							switch (Menu::stage) {
+							case STAGE1:
+								boss->SetDamage();
+								break;
+							case STAGE2:
+								boss2->SetDamage();
+								break;
+							case STAGE3:
+								boss3->SetDamage();
+								break;
+							default:
+								break;
+							}
+							//boss->SetDamage();
 						}
 						else if (boss_hp < 0) {//hpが0になったら
+
+							switch (Menu::stage) {
+							case STAGE1:
+								boss->SetFlag(false);
+								break;
+							case STAGE2:
+								boss2->SetFlag(false);
+								break;
+							case STAGE3:
+								boss3->SetFlag(false);
+							    break;
+							default:
+								break;
+							}
+
 							gameclear = true;
-							boss->SetFlag(false);//敵死亡
+							//boss->SetFlag(false);//敵死亡
 							befe_flag = true;//ダメージエフェクトフラグ
 							edeath_flag = true;//弾当たり音フラグ
 							gameclear_soundflag = true;
@@ -562,8 +722,23 @@ void Control::BossAllJudge() {
 
 		player->GetCoordinate(&px2, &py2);//playerの座標を貰って
 		for (int s = 0; s < BOSSSHOT_NUM; s++) {//boss1の弾の数だけ
-			if (boss->GetshotCoordinate(s, &bx2, &by2, &shot_pattern)) {
-				;
+			bool temp;
+
+			switch (Menu::stage) {
+			case STAGE1:
+				temp = boss->GetshotCoordinate(s, &bx2, &by2, &shot_pattern);
+				break;
+			case STAGE2:
+				temp = boss2->GetshotCoordinate(s, &bx2, &by2, &shot_pattern);
+				break;
+			case STAGE3:
+				temp = boss3->GetshotCoordinate(s, &bx2, &by2, &shot_pattern);
+				break;
+			default:
+				break;
+			}
+
+			if (temp) {
 				switch (shot_pattern) {//bssの弾の種類で変更(bossは弾の種類=打ち方の種類だからtypeでなくpatternで済む)
 				case 0://弾1
 					//当たり判定の前にグレイズ判定を行う
@@ -599,8 +774,43 @@ void Control::BossAllJudge() {
 					break;
 				}
 				if (gra_tempflag) {//グレイズ当たった
-					if (!boss->GetGrazeflag(s)) {//その弾のフラグが立ってないなら立てる
-						boss->SetGrazeflag(s);
+					bool temp;
+					switch (Menu::stage) {
+					case STAGE1:
+						temp = boss->GetGrazeflag(s);
+						break;
+					case STAGE2:
+						temp = boss2->GetGrazeflag(s);
+						break;
+					case STAGE3:
+						temp = boss3->GetGrazeflag(s);
+						break;
+					default:
+						break;
+
+					}
+					if (temp) {//その弾のフラグが立ってないなら立てる
+						//boss->SetGrazeflag(s);
+						switch (Menu::stage) {
+						case STAGE1:
+							boss->SetGrazeflag(s);
+							break;
+						case STAGE2:
+							boss2->SetGrazeflag(s);
+							break;
+						case STAGE3:
+							boss3->SetGrazeflag(s);
+							break;
+						default:
+							break;
+
+						}
+
+
+
+
+
+
 						//フラグが立ってないグレイズのフラグを立てて座標を設定
 						for (int j = 0; j < GRAZE_NUM; j++) {
 							if (!graze[j]->Getflag()) {
@@ -619,7 +829,21 @@ void Control::BossAllJudge() {
 
 				if (dam_tempflag) {//ダメージをうけた
 					player->SetDamageflag();//ダメージフラグを立てる
-					boss->SetShotflag(s, false);//当たった弾のフラグを戻す
+
+					switch (Menu::stage) {
+					case STAGE1:
+						boss->SetShotflag(s, false);//当たった弾のフラグを戻す
+						break;
+					case STAGE2:
+						boss2->SetShotflag(s, false);//当たった弾のフラグを戻す
+						break;
+					case STAGE3:
+						boss3->SetShotflag(s, false);//当たった弾のフラグを戻す
+						break;
+					default:
+						break;
+
+					}
 					pdamage_flag = true;//ダメージ音フラグ
 					pefe_flag = true;//ダメージエフェクトフラグ
 					if (player->GetLife() == 0) gameover_soundflag = true;//ダメージ＝０ならゲームオーバーの音出す
@@ -687,7 +911,19 @@ void Control::EFECTALL() {
 		if (pefecount == 40) { pefecount = 0; pefe_flag = false; }
 	}
 	if (befe_flag) {
-		boss->GetCoordinate(&bx, &by);
+		switch (Menu::stage) {
+		case STAGE1:
+			boss->GetCoordinate(&bx, &by);
+			break;
+		case STAGE2:
+			boss2->GetCoordinate(&bx, &by);
+			break;
+		case STAGE3:
+			boss3->GetCoordinate(&bx, &by);
+			break;
+		default:
+			break;
+		}
 		temp1 = eefecount;
 
 		//ライブラリで描画
@@ -734,11 +970,100 @@ void Control::GetResult(int* x, int* y,int *z) {
 
 //初期化
 void Control::Initialize() {
+
+	//data初期化
+	memset(data, 0, sizeof(data));
+
+	//Enemyクラスのデータをクラスのインスタンスに入れる
+	FILE* fp=0;//ファイルポインタ
+	char buf[100];
+	int s;
+	int row = 0;
+	int col = 1;
+	bool flag = false;
+	memset(buf, 0, sizeof(buf));
+	//読み取り専用でファイルを開ける
+	switch (Menu::stage) {
+	case STAGE1:
+		if ((fopen_s(&fp, "IMAGE/enemydata1.csv", "r")) != 0) MSG("エラー");
+		break;
+	case STAGE2:
+		if ((fopen_s(&fp, "IMAGE/enemydata2.csv", "r")) != 0) MSG("エラー");
+		break;
+	case STAGE3:
+		if ((fopen_s(&fp, "IMAGE/enemydata3.csv", "r")) != 0) MSG("エラー");
+		break;
+	default:
+		break;
+	}
+	while (fgetc(fp) != '\n') {};//1行目は何もしない
+
+	while (1) {//読み取り終わるまでループ
+
+		while (1) {//1つのデータを読み取るまでループ
+
+			s = fgetc(fp);//1文字だけ読み取り
+
+			if (s == EOF) {//もし末尾ならばフラグを立ててこのループを抜ける
+				flag = true;
+				break;
+			}
+
+			if (s != ',' && s != '\n') {//コンマや改行になるまでbufに文字を入れる
+				strcat_s(buf, (const char*)&s);
+			}
+			else {//コンマや改行ならこのループを抜ける
+				break;
+			}
+		}
+		if (flag)  break;//フラグが立っているならファイル読み取り終わり
+
+		// 今、bufにはExcelのセル1個分のデータが入ってる
+		switch (col) {//今何列目？
+		case 1: data[row].type = atoi(buf); break;//atoiで今の行のtypeにデータを数値として入れる
+		case 2: data[row].shottype = atoi(buf); break;
+		case 3:	data[row].move_pattern = atoi(buf); break;
+		case 4: data[row].shot_pattern = atoi(buf); break;
+		case 5: data[row].speed = atoi(buf); break;
+		case 6:data[row].intime = atoi(buf); break;
+		case 7:data[row].stoptime = atoi(buf); break;
+		case 8:data[row].shottime = atoi(buf); break;
+		case 9:data[row].outtime = atoi(buf); break;
+		case 10:data[row].x = atoi(buf); break;
+		case 11:data[row].y = atoi(buf); break;
+		case 12:data[row].hp = atoi(buf); break;
+		case 13:data[row].item = atoi(buf); break;
+		}
+		memset(buf, 0, sizeof(buf));//bufを初期化
+		++col;//列をずらす
+		if (s == '\n') {//行が終わったら
+			col = 1;//列を1列目に戻す
+			++row;//行をずらす
+		}
+	}
+	//敵クラスを作る
+	for (int i = 0; i < ENEMY_NUM; i++) {
+		enemy[i] = new Enemy(data[i].type, data[i].shottype, data[i].move_pattern, data[i].shot_pattern, data[i].speed, data[i].intime, data[i].stoptime, data[i].shottime, data[i].outtime, data[i].x, data[i].y, data[i].hp, data[i].item);
+
+	}
+
+
 	//インスタンスの再生成
 	player = new Player;
 	back = new Back;
 	score = new Score;
-	boss = new Boss;
+
+	switch (Menu::stage) {
+	case STAGE1:
+		boss = new Boss;
+		break;
+	case STAGE2:
+		boss2 = new Boss2;
+		break;
+	case STAGE3:
+		boss3 = new Boss3;
+		break;
+	}
 
 	for (int i = 0; i < GRAZE_NUM; i++) {
 		graze[i] = new Graze;
@@ -791,17 +1116,17 @@ void Control::Initialize() {
 	}
 
 	//ハイスコアを更新する
-	//switch (Menu::stage) {
-	//case STAGE1:
+	switch (Menu::stage) {
+	case STAGE1:
 		score->SetScore(SCOREDATA::HIGH_SCORE, hiscore);
-		//break;
-	/*case STAGE2:
+		break;
+	case STAGE2:
 		score->SetScore(SCOREDATA::HIGH_SCORE, hiscore2);
 		break;
 	case STAGE3:
 		score->SetScore(SCOREDATA::HIGH_SCORE, hiscore3);
 		break;
-	}*/
+	}
 
 	switch (Menu::stage) {
 	case STAGE1:
@@ -816,8 +1141,19 @@ void Control::Initialize() {
 	default:
 		break;
 	}
-
-
+	switch (Menu::stage) {
+	case STAGE1:
+		bossbgm = LoadSoundMem("MUSIC/boss.ogg");
+		break;
+	case STAGE2:
+		bossbgm = LoadSoundMem("MUSIC/boss2.ogg");
+		break;
+	case STAGE3:
+		bossbgm = LoadSoundMem("MUSIC/boss3.ogg");
+		break;
+	default:
+		break;
+	}
 
 }
 
@@ -839,7 +1175,17 @@ void Control::Finalize() {
 	for (int i = 0; i < ITEM_NUM; ++i) {
 		delete item[i];
 	}
-	delete boss;
+	switch (Menu::stage) {
+	case STAGE1:
+		delete boss;
+		break;
+	case STAGE2:
+		delete boss2;
+		break;
+	case STAGE3:
+		delete boss3;
+		break;
+	}
 	for (int i = 0; i < ENEMY_NUM; i++) {
 		if (enemy[i] != NULL) {//まだ消滅してないenemyがあったらdelete
 			delete enemy[i];
